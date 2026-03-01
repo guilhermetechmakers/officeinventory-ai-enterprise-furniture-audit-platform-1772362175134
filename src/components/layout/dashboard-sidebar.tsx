@@ -16,6 +16,7 @@ import {
   Upload,
   MapPin,
   SlidersHorizontal,
+  BookOpen,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -35,6 +36,7 @@ const navItems = [
 
 const adminItems = [
   { to: '/dashboard/profile', icon: UserCircle, label: 'Profile' },
+  { to: '/help', icon: BookOpen, label: 'Help & Docs' },
   { to: '/dashboard/tenant-settings', icon: SlidersHorizontal, label: 'Tenant Settings' },
   { to: '/dashboard/admin', icon: Settings, label: 'Admin' },
   { to: '/dashboard/users', icon: Users, label: 'Users' },
@@ -94,7 +96,10 @@ export function DashboardSidebar() {
         <Separator className="my-2" />
 
         {adminItems.map((item) => {
-          const isActive = location.pathname === item.to
+          const isActive =
+            item.to === '/help'
+              ? location.pathname.startsWith('/help')
+              : location.pathname === item.to
           return (
             <Link key={item.to} to={item.to}>
               <div

@@ -11,7 +11,10 @@ import {
 } from '@/pages/password-reset'
 import { EmailVerificationPageRoute } from '@/pages/email-verification'
 import { ContactPage } from '@/pages/contact'
-import { HelpPage } from '@/pages/help'
+import { HelpLayout } from '@/pages/help/help-layout'
+import { DocumentationCenterPage } from '@/pages/help/documentation-center-page'
+import { GuideDetailPage } from '@/pages/help/guide-detail-page'
+import { DocDetailPage } from '@/pages/help/doc-detail-page'
 import { LegalPage } from '@/pages/legal'
 import { NotFoundPage } from '@/pages/not-found'
 import { DashboardOverview } from '@/pages/dashboard/overview'
@@ -80,7 +83,15 @@ export const router = createBrowserRouter([
     ],
   },
   { path: '/contact', element: <ContactPage /> },
-  { path: '/help', element: <HelpPage /> },
+  {
+    path: '/help',
+    element: <HelpLayout />,
+    children: [
+      { index: true, element: <DocumentationCenterPage /> },
+      { path: 'guides/:id', element: <GuideDetailPage /> },
+      { path: 'docs/:id', element: <DocDetailPage /> },
+    ],
+  },
   {
     path: '/privacy',
     element: <LegalPage title="Privacy Policy" content="Privacy policy content. Update with your actual privacy policy text." />,
