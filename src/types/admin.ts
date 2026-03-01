@@ -29,22 +29,58 @@ export interface UpdateTenantInput extends Partial<CreateTenantInput> {
 
 export interface User {
   id: string
+  name?: string
   email: string
   tenantId: string
+  tenantName?: string
   isActive: boolean
   roles: string[]
+  role?: string
   invitedAt: string
+  lastActive?: string | null
 }
 
 export interface Role {
   id: string
   name: string
+  description?: string
   permissions: string[]
+  tenantId?: string
+}
+
+/** Role template for display in RoleTemplatesPanel */
+export interface RoleTemplate {
+  id: string
+  name: string
+  description: string
+  permissions: string[]
+  tenantId?: string
+}
+
+export interface AuditLogFilters {
+  tenantId?: string
+  userId?: string
+  startDate?: string
+  endDate?: string
+  action?: string
 }
 
 export interface CreateRoleInput {
   name: string
+  description?: string
   permissions: string[]
+  tenantId?: string
+}
+
+export interface InviteInput {
+  name: string
+  email: string
+  tenantId: string
+  role: string
+}
+
+export interface BulkInviteInput {
+  invites: InviteInput[]
 }
 
 export interface SSOConfig {
@@ -105,6 +141,8 @@ export interface AuditLogEntry {
   action: string
   actorId: string
   actorEmail?: string
+  subjectUserId?: string
+  tenantId?: string
   timestamp: string
   details?: Record<string, unknown>
 }

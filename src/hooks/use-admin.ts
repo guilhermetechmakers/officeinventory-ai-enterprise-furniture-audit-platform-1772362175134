@@ -7,6 +7,8 @@ import type {
   CreateTenantInput,
   UpdateTenantInput,
   CreateRoleInput,
+  InviteInput,
+  AuditLogFilters,
   SSOConfig,
 } from '@/types/admin'
 
@@ -53,10 +55,10 @@ export function useUpdateTenant() {
   })
 }
 
-export function useUsers() {
+export function useUsers(tenantId?: string) {
   return useQuery({
-    queryKey: adminKeys.users,
-    queryFn: adminApi.getUsers,
+    queryKey: [...adminKeys.users, tenantId ?? 'all'],
+    queryFn: () => adminApi.getUsers(tenantId ? { tenantId } : undefined),
     staleTime: 60_000,
   })
 }
@@ -64,13 +66,30 @@ export function useUsers() {
 export function useInviteUser() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (payload: { email: string; role: string; tenantId: string }) =>
-      adminApi.inviteUser(payload),
+    mutationFn: (payload: InviteInput) => adminApi.inviteUser(payload),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: adminKeys.users })
       toast.success('Invitation sent')
     },
     onError: (e: Error) => toast.error(e?.message ?? 'Failed to invite user'),
+  })
+}
+
+export function useInviteUsersBulk() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: { invites: InviteInput[] }) =>
+      adminApi.inviteUsersBulk(payload),
+    onSuccess: (data) => {
+      qc.invalidateQueries({ queryKey: adminKeys.users })
+      const { created = 0, failed = 0 } = data ?? {}
+      if (failed > 0) {
+        toast.warning(`${created} invited, ${failed} failed`)
+      } else {
+        toast.success(`${created} user(s) invited successfully`)
+      }
+    },
+    onError: (e: Error) => toast.error(e?.message ?? 'Failed to invite users'),
   })
 }
 
@@ -166,10 +185,10 @@ export function useBillingOverview() {
   })
 }
 
-export function useAuditLogs() {
+export function useAuditLogs(filters?: AuditLogFilters) {
   return useQuery({
-    queryKey: adminKeys.audit,
-    queryFn: adminApi.getAuditLogs,
+    queryKey: [...adminKeys.audit, filters ?? {}] as const,
+    queryFn: () => adminApi.getAuditLogs(filters),
     staleTime: 30_000,
   })
 }

@@ -18,6 +18,8 @@ import type {
   User,
   Role,
   CreateRoleInput,
+  InviteInput,
+  AuditLogFilters,
   SSOConfig,
   Invoice,
   HealthOverview,
@@ -72,31 +74,67 @@ export async function updateTenant(id: string, input: UpdateTenantInput): Promis
 }
 
 // Users
-export async function getUsers(): Promise<User[]> {
-  if (USE_MOCK) return [...mockUsers]
-  const res = await apiGet<{ data?: User[]; users?: User[] }>('/admin/users')
-  return safeArray<User>(res?.data ?? res?.users) || mockUsers
+export async function getUsers(params?: { tenantId?: string }): Promise<User[]> {
+  if (USE_MOCK) {
+    const list = [...mockUsers]
+    if (params?.tenantId) {
+      return list.filter((u) => u.tenantId === params.tenantId)
+    }
+    return list
+  }
+  const qs = params?.tenantId ? `?tenantId=${encodeURIComponent(params.tenantId)}` : ''
+  const res = await apiGet<{ data?: User[]; users?: User[] }>(`/admin/users${qs}`)
+  return safeArray<User>(res?.data ?? res?.users) || []
 }
 
-export async function inviteUser(payload: {
-  email: string
-  role: string
-  tenantId: string
-}): Promise<User> {
+export async function inviteUser(payload: InviteInput): Promise<User> {
   if (USE_MOCK) {
     const newUser: User = {
       id: `u${Date.now()}`,
+      name: payload.name ?? '',
       email: payload.email,
       tenantId: payload.tenantId,
       isActive: false,
       roles: [payload.role],
       invitedAt: new Date().toISOString(),
+      lastActive: null,
     }
     mockUsers.push(newUser)
     return newUser
   }
-  const res = await apiPost<User>('/admin/users/invite', payload)
+  const res = await apiPost<User>('/admin/invite', payload)
   return safeObject(res, {} as User)
+}
+
+export async function inviteUsersBulk(params: { invites: InviteInput[] }): Promise<{ created: number; failed: number; errors?: string[] }> {
+  const invites = Array.isArray(params?.invites) ? params.invites : []
+  if (USE_MOCK) {
+    let created = 0
+    const errors: string[] = []
+    const baseId = Date.now()
+    for (let i = 0; i < invites.length; i++) {
+      const inv = invites[i]
+      try {
+        const newUser: User = {
+          id: `u${baseId}_${i}`,
+          name: inv.name ?? '',
+          email: inv.email,
+          tenantId: inv.tenantId,
+          isActive: false,
+          roles: [inv.role],
+          invitedAt: new Date().toISOString(),
+          lastActive: null,
+        }
+        mockUsers.push(newUser)
+        created++
+      } catch {
+        errors.push(`${inv.email}: failed`)
+      }
+    }
+    return { created, failed: invites.length - created, errors: errors.length > 0 ? errors : undefined }
+  }
+  const res = await apiPost<{ created: number; failed: number; errors?: string[] }>('/admin/invite/bulk', params)
+  return safeObject(res, { created: 0, failed: invites.length })
 }
 
 export async function activateUser(id: string): Promise<User> {
@@ -137,7 +175,9 @@ export async function createRole(input: CreateRoleInput): Promise<Role> {
     const newRole: Role = {
       id: `r${Date.now()}`,
       name: input.name,
+      description: input.description,
       permissions: input.permissions ?? [],
+      tenantId: input.tenantId,
     }
     mockRoles.push(newRole)
     return newRole
@@ -202,8 +242,33 @@ export async function getInvoices(): Promise<Invoice[]> {
 }
 
 // Audit
-export async function getAuditLogs(): Promise<AuditLogEntry[]> {
-  if (USE_MOCK) return [...mockAuditLogs]
-  const res = await apiGet<{ data?: AuditLogEntry[] }>('/admin/audit')
-  return safeArray<AuditLogEntry>(res?.data) || mockAuditLogs
+export async function getAuditLogs(filters?: AuditLogFilters): Promise<AuditLogEntry[]> {
+  if (USE_MOCK) {
+    let list = [...mockAuditLogs]
+    if (filters?.tenantId) {
+      list = list.filter((l) => l.tenantId === filters.tenantId || !l.tenantId)
+    }
+    if (filters?.userId) {
+      list = list.filter((l) => l.actorId === filters.userId || l.subjectUserId === filters.userId)
+    }
+    if (filters?.action) {
+      list = list.filter((l) => l.action?.toLowerCase().includes((filters.action ?? '').toLowerCase()))
+    }
+    if (filters?.startDate) {
+      list = list.filter((l) => l.timestamp >= filters!.startDate!)
+    }
+    if (filters?.endDate) {
+      list = list.filter((l) => l.timestamp <= filters!.endDate!)
+    }
+    return list
+  }
+  const qs = new URLSearchParams()
+  if (filters?.tenantId) qs.set('tenantId', filters.tenantId)
+  if (filters?.userId) qs.set('userId', filters.userId)
+  if (filters?.action) qs.set('action', filters.action)
+  if (filters?.startDate) qs.set('startDate', filters.startDate)
+  if (filters?.endDate) qs.set('endDate', filters.endDate)
+  const query = qs.toString()
+  const res = await apiGet<{ data?: AuditLogEntry[] }>(`/admin/audit-logs${query ? `?${query}` : ''}`)
+  return safeArray<AuditLogEntry>(res?.data) || []
 }
