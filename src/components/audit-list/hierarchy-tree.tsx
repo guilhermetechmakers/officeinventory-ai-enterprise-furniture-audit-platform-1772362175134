@@ -37,8 +37,6 @@ interface HierarchyTreeProps {
   }) => void
 }
 
-type NodeType = 'tenant' | 'site' | 'floor' | 'zone'
-
 function safeArray<T>(arr: T[] | null | undefined): T[] {
   return Array.isArray(arr) ? arr : []
 }

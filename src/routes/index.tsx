@@ -18,6 +18,8 @@ import { DashboardOverview } from '@/pages/dashboard/overview'
 import { CapturePage } from '@/pages/dashboard/capture'
 import { UploadsPage } from '@/pages/dashboard/uploads'
 import { AuditsPage } from '@/pages/dashboard/audits'
+import { AuditsSiteDetailPage } from '@/pages/dashboard/audits-site-detail'
+import { AuditDetailPage } from '@/pages/dashboard/audit-detail'
 import { ReviewQueuePage } from '@/pages/dashboard/review-queue'
 import { MergePage } from '@/pages/dashboard/merge'
 import { ReportsPage } from '@/pages/dashboard/reports'
@@ -56,6 +58,9 @@ export const router = createBrowserRouter([
       { path: 'capture', element: <CapturePage /> },
       { path: 'uploads', element: <UploadsPage /> },
       { path: 'audits', element: <AuditsPage /> },
+      { path: 'audits/sites/:siteId', element: <AuditsSiteDetailPage /> },
+      { path: 'audits/sites/:siteId/floors/:floorId', element: <AuditsSiteDetailPage /> },
+      { path: 'audits/:auditId', element: <AuditDetailPage /> },
       { path: 'review-queue', element: <ReviewQueuePage /> },
       { path: 'merge', element: <MergePage /> },
       { path: 'reports', element: <ReportsPage /> },

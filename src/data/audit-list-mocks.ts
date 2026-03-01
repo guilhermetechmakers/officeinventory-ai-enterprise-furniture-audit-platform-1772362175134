@@ -3,7 +3,7 @@
  * Used when APIs are not yet wired
  */
 
-import type { Tenant, Audit, SiteDetail, ActivityLog } from '@/types/audit-list'
+import type { Tenant, Audit, SiteDetail } from '@/types/audit-list'
 
 export const mockTenants: Tenant[] = [
   {
