@@ -98,3 +98,17 @@ export interface PasswordResetRequest {
 export interface PasswordResetResponse {
   message: string
 }
+
+/** Email verification status for intermediary verification page */
+export type VerificationStatus = 'pending' | 'verified' | 'failed'
+
+export interface UserEmailVerification {
+  email: string
+  status: VerificationStatus
+  cooldownSeconds: number
+}
+
+export interface ChangeEmailPayload {
+  email: string
+  requestedAt: string
+}

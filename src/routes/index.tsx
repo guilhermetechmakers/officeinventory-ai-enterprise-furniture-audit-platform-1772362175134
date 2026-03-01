@@ -5,6 +5,7 @@ import { LandingPage } from '@/pages/landing'
 import { LoginPage } from '@/pages/login'
 import { SignupPage } from '@/pages/signup'
 import { ForgotPasswordPage } from '@/pages/forgot-password'
+import { EmailVerificationPageRoute } from '@/pages/email-verification'
 import { ContactPage } from '@/pages/contact'
 import { HelpPage } from '@/pages/help'
 import { LegalPage } from '@/pages/legal'
@@ -30,6 +31,7 @@ export const router = createBrowserRouter([
       { path: 'login', element: <LoginPage /> },
       { path: 'signup', element: <SignupPage /> },
       { path: 'forgot-password', element: <ForgotPasswordPage /> },
+      { path: 'verify-email', element: <EmailVerificationPageRoute /> },
     ],
   },
   {
