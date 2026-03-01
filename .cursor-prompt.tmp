@@ -1,0 +1,1402 @@
+⚠️ CRITICAL EXECUTION RULES - READ FIRST ⚠️
+❌ NEVER run: npm run dev, npm start, yarn dev, pnpm dev, or ANY development server
+❌ NEVER run: long-running processes, servers, or commands that don't exit
+❌ NEVER test the application by starting it
+✅ ALLOWED: npm install, npm run build, npm run test (if needed)
+✅ YOUR TASK: Create/modify files only, then STOP and EXIT immediately
+⚠️ The MCP server handles all testing and validation separately
+
+You are an expert full-stack developer proficient in TypeScript, React, Next.js, and modern UI/UX frameworks (Tailwind CSS, Shadcn UI, Radix UI).
+
+=== DESIGN REFERENCE (MANDATORY) ===
+# Modern Design Best Practices
+
+## Philosophy
+
+Create unique, memorable experiences while maintaining consistency through modern design principles. Every project should feel distinct yet professional, innovative yet intuitive.
+
+---
+
+## Landing Pages & Marketing Sites
+
+### Hero Sections
+**Go beyond static backgrounds:**
+- Animated gradients with subtle movement
+- Particle systems or geometric shapes floating
+- Interactive canvas backgrounds (Three.js, WebGL)
+- Video backgrounds with proper fallbacks
+- Parallax scrolling effects
+- Gradient mesh animations
+- Morphing blob animations
+
+
+### Layout Patterns
+**Use modern grid systems:**
+- Bento grids (asymmetric card layouts)
+- Masonry layouts for varied content
+- Feature sections with diagonal cuts or curves
+- Overlapping elements with proper z-index
+- Split-screen designs with scroll-triggered reveals
+
+**Avoid:** Traditional 3-column equal grids
+
+### Scroll Animations
+**Engage users as they scroll:**
+- Fade-in and slide-up animations for sections
+- Scroll-triggered parallax effects
+- Progress indicators for long pages
+- Sticky elements that transform on scroll
+- Horizontal scroll sections for portfolios
+- Text reveal animations (word by word, letter by letter)
+- Number counters animating into view
+
+**Avoid:** Static pages with no scroll interaction
+
+### Call-to-Action Areas
+**Make CTAs impossible to miss:**
+- Gradient buttons with hover effects
+- Floating action buttons with micro-interactions
+- Animated borders or glowing effects
+- Scale/lift on hover
+- Interactive elements that respond to mouse position
+- Pulsing indicators for primary actions
+
+---
+
+## Dashboard Applications
+
+### Layout Structure
+**Always use collapsible side navigation:**
+- Sidebar that can collapse to icons only
+- Smooth transition animations between states
+- Persistent navigation state (remember user preference)
+- Mobile: drawer that slides in/out
+- Desktop: sidebar with expand/collapse toggle
+- Icons visible even when collapsed
+
+**Structure:**
+```
+/dashboard (layout wrapper with sidebar)
+  /dashboard/overview
+  /dashboard/analytics
+  /dashboard/settings
+  /dashboard/users
+  /dashboard/projects
+```
+
+All dashboard pages should be nested inside the dashboard layout, not separate routes.
+
+### Data Tables
+**Modern table design:**
+- Sticky headers on scroll
+- Row hover states with subtle elevation
+- Sortable columns with clear indicators
+- Pagination with items-per-page control
+- Search/filter with instant feedback
+- Selection checkboxes with bulk actions
+- Responsive: cards on mobile, table on desktop
+- Loading skeletons, not spinners
+- Empty states with illustrations or helpful text
+
+**Use modern table libraries:**
+- TanStack Table (React Table v8)
+- AG Grid for complex data
+- Data Grid from MUI (if using MUI)
+
+### Charts & Visualizations
+**Use the latest charting libraries:**
+- Recharts (for React, simple charts)
+- Chart.js v4 (versatile, well-maintained)
+- Apache ECharts (advanced, interactive)
+- D3.js (custom, complex visualizations)
+- Tremor (for dashboards, built on Recharts)
+
+**Chart best practices:**
+- Animated transitions when data changes
+- Interactive tooltips with detailed info
+- Responsive sizing
+- Color scheme matching design system
+- Legend placement that doesn't obstruct data
+- Loading states while fetching data
+
+### Dashboard Cards
+**Metric cards should stand out:**
+- Gradient backgrounds or colored accents
+- Trend indicators (↑ ↓ with color coding)
+- Sparkline charts for historical data
+- Hover effects revealing more detail
+- Icon representing the metric
+- Comparison to previous period
+
+---
+
+## Color & Visual Design
+
+### Color Palettes
+**Create depth with gradients:**
+- Primary gradient (not just solid primary color)
+- Subtle background gradients
+- Gradient text for headings
+- Gradient borders on cards
+- Elevated surfaces for depth
+
+**Color usage:**
+- 60-30-10 rule (dominant, secondary, accent)
+- Consistent semantic colors (success, warning, error)
+- Accessible contrast ratios (WCAG AA minimum)
+
+### Typography
+**Create hierarchy through contrast:**
+- Large, bold headings (48-72px for heroes)
+- Clear size differences between levels
+- Variable font weights (300, 400, 600, 700)
+- Letter spacing for small caps
+- Line height 1.5-1.7 for body text
+- Inter, Poppins, or DM Sans for modern feel
+
+### Shadows & Depth
+**Layer UI elements:**
+- Multi-layer shadows for realistic depth
+- Colored shadows matching element color
+- Elevated states on hover
+- Neumorphism for special elements (sparingly)
+
+---
+
+## Interactions & Micro-animations
+
+### Button Interactions
+**Every button should react:**
+- Scale slightly on hover (1.02-1.05)
+- Lift with shadow on hover
+- Ripple effect on click
+- Loading state with spinner or progress
+- Disabled state clearly visible
+- Success state with checkmark animation
+
+### Card Interactions
+**Make cards feel alive:**
+- Lift on hover with increased shadow
+- Subtle border glow on hover
+- Tilt effect following mouse (3D transform)
+- Smooth transitions (200-300ms)
+- Click feedback for interactive cards
+
+### Form Interactions
+**Guide users through forms:**
+- Input focus states with border color change
+- Floating labels that animate up
+- Real-time validation with inline messages
+- Success checkmarks for valid inputs
+- Error states with shake animation
+- Password strength indicators
+- Character count for text areas
+
+### Page Transitions
+**Smooth between views:**
+- Fade + slide for page changes
+- Skeleton loaders during data fetch
+- Optimistic UI updates
+- Stagger animations for lists
+- Route transition animations
+
+---
+
+## Mobile Responsiveness
+
+### Mobile-First Approach
+**Design for mobile, enhance for desktop:**
+- Touch targets minimum 44x44px
+- Generous padding and spacing
+- Sticky bottom navigation on mobile
+- Collapsible sections for long content
+- Swipeable cards and galleries
+- Pull-to-refresh where appropriate
+
+### Responsive Patterns
+**Adapt layouts intelligently:**
+- Hamburger menu → full nav bar
+- Card grid → stack on mobile
+- Sidebar → drawer
+- Multi-column → single column
+- Data tables → card list
+- Hide/show elements based on viewport
+
+---
+
+## Loading & Empty States
+
+### Loading States
+**Never leave users wondering:**
+- Skeleton screens matching content layout
+- Progress bars for known durations
+- Animated placeholders
+- Spinners only for short waits (<3s)
+- Stagger loading for multiple elements
+- Shimmer effects on skeletons
+
+### Empty States
+**Make empty states helpful:**
+- Illustrations or icons
+- Helpful copy explaining why it's empty
+- Clear CTA to add first item
+- Examples or suggestions
+- No "no data" text alone
+
+---
+
+## Unique Elements to Stand Out
+
+### Distinctive Features
+**Add personality:**
+- Custom cursor effects on landing pages
+- Animated page numbers or section indicators
+- Unusual hover effects (magnification, distortion)
+- Custom scrollbars
+- Glassmorphism for overlays
+- Animated SVG icons
+- Typewriter effects for hero text
+- Confetti or celebration animations for actions
+
+### Interactive Elements
+**Engage users:**
+- Drag-and-drop interfaces
+- Sliders and range controls
+- Toggle switches with animations
+- Progress steps with animations
+- Expandable/collapsible sections
+- Tabs with slide indicators
+- Image comparison sliders
+- Interactive demos or playgrounds
+
+---
+
+## Consistency Rules
+
+### Maintain Consistency
+**What should stay consistent:**
+- Spacing scale (4px, 8px, 16px, 24px, 32px, 48px, 64px)
+- Border radius values
+- Animation timing (200ms, 300ms, 500ms)
+- Color system (primary, secondary, accent, neutrals)
+- Typography scale
+- Icon style (outline vs filled)
+- Button styles across the app
+- Form element styles
+
+### What Can Vary
+**Project-specific customization:**
+- Color palette (different colors, same system)
+- Layout creativity (grids, asymmetry)
+- Illustration style
+- Animation personality
+- Feature-specific interactions
+- Hero section design
+- Card styling variations
+- Background patterns or textures
+
+---
+
+## Technical Excellence
+
+### Performance
+- Optimize images (WebP, lazy loading)
+- Code splitting for faster loads
+- Debounce search inputs
+- Virtualize long lists
+- Minimize re-renders
+- Use proper memoization
+
+### Accessibility
+- Keyboard navigation throughout
+- ARIA labels where needed
+- Focus indicators visible
+- Screen reader friendly
+- Sufficient color contrast
+- Respect reduced motion preferences
+
+---
+
+## Key Principles
+
+1. **Be Bold** - Don't be afraid to try unique layouts and interactions
+2. **Be Consistent** - Use the same patterns for similar functions
+3. **Be Responsive** - Design works beautifully on all devices
+4. **Be Fast** - Animations are smooth, loading is quick
+5. **Be Accessible** - Everyone can use what you build
+6. **Be Modern** - Use current design trends and technologies
+7. **Be Unique** - Each project should have its own personality
+8. **Be Intuitive** - Users shouldn't need instructions
+
+
+*IMPORTANT*: For every page or component refer to # Modern Design Best Practices
+
+## Philosophy
+
+Create unique, memorable experiences while maintaining consistency through modern design principles. Every project should feel distinct yet professional, innovative yet intuitive.
+
+---
+
+## Landing Pages & Marketing Sites
+
+### Hero Sections
+**Go beyond static backgrounds:**
+- Animated gradients with subtle movement
+- Particle systems or geometric shapes floating
+- Interactive canvas backgrounds (Three.js, WebGL)
+- Video backgrounds with proper fallbacks
+- Parallax scrolling effects
+- Gradient mesh animations
+- Morphing blob animations
+
+
+### Layout Patterns
+**Use modern grid systems:**
+- Bento grids (asymmetric card layouts)
+- Masonry layouts for varied content
+- Feature sections with diagonal cuts or curves
+- Overlapping elements with proper z-index
+- Split-screen designs with scroll-triggered reveals
+
+**Avoid:** Traditional 3-column equal grids
+
+### Scroll Animations
+**Engage users as they scroll:**
+- Fade-in and slide-up animations for sections
+- Scroll-triggered parallax effects
+- Progress indicators for long pages
+- Sticky elements that transform on scroll
+- Horizontal scroll sections for portfolios
+- Text reveal animations (word by word, letter by letter)
+- Number counters animating into view
+
+**Avoid:** Static pages with no scroll interaction
+
+### Call-to-Action Areas
+**Make CTAs impossible to miss:**
+- Gradient buttons with hover effects
+- Floating action buttons with micro-interactions
+- Animated borders or glowing effects
+- Scale/lift on hover
+- Interactive elements that respond to mouse position
+- Pulsing indicators for primary actions
+
+---
+
+## Dashboard Applications
+
+### Layout Structure
+**Always use collapsible side navigation:**
+- Sidebar that can collapse to icons only
+- Smooth transition animations between states
+- Persistent navigation state (remember user preference)
+- Mobile: drawer that slides in/out
+- Desktop: sidebar with expand/collapse toggle
+- Icons visible even when collapsed
+
+**Structure:**
+```
+/dashboard (layout wrapper with sidebar)
+  /dashboard/overview
+  /dashboard/analytics
+  /dashboard/settings
+  /dashboard/users
+  /dashboard/projects
+```
+
+All dashboard pages should be nested inside the dashboard layout, not separate routes.
+
+### Data Tables
+**Modern table design:**
+- Sticky headers on scroll
+- Row hover states with subtle elevation
+- Sortable columns with clear indicators
+- Pagination with items-per-page control
+- Search/filter with instant feedback
+- Selection checkboxes with bulk actions
+- Responsive: cards on mobile, table on desktop
+- Loading skeletons, not spinners
+- Empty states with illustrations or helpful text
+
+**Use modern table libraries:**
+- TanStack Table (React Table v8)
+- AG Grid for complex data
+- Data Grid from MUI (if using MUI)
+
+### Charts & Visualizations
+**Use the latest charting libraries:**
+- Recharts (for React, simple charts)
+- Chart.js v4 (versatile, well-maintained)
+- Apache ECharts (advanced, interactive)
+- D3.js (custom, complex visualizations)
+- Tremor (for dashboards, built on Recharts)
+
+**Chart best practices:**
+- Animated transitions when data changes
+- Interactive tooltips with detailed info
+- Responsive sizing
+- Color scheme matching design system
+- Legend placement that doesn't obstruct data
+- Loading states while fetching data
+
+### Dashboard Cards
+**Metric cards should stand out:**
+- Gradient backgrounds or colored accents
+- Trend indicators (↑ ↓ with color coding)
+- Sparkline charts for historical data
+- Hover effects revealing more detail
+- Icon representing the metric
+- Comparison to previous period
+
+---
+
+## Color & Visual Design
+
+### Color Palettes
+**Create depth with gradients:**
+- Primary gradient (not just solid primary color)
+- Subtle background gradients
+- Gradient text for headings
+- Gradient borders on cards
+- Elevated surfaces for depth
+
+**Color usage:**
+- 60-30-10 rule (dominant, secondary, accent)
+- Consistent semantic colors (success, warning, error)
+- Accessible contrast ratios (WCAG AA minimum)
+
+### Typography
+**Create hierarchy through contrast:**
+- Large, bold headings (48-72px for heroes)
+- Clear size differences between levels
+- Variable font weights (300, 400, 600, 700)
+- Letter spacing for small caps
+- Line height 1.5-1.7 for body text
+- Inter, Poppins, or DM Sans for modern feel
+
+### Shadows & Depth
+**Layer UI elements:**
+- Multi-layer shadows for realistic depth
+- Colored shadows matching element color
+- Elevated states on hover
+- Neumorphism for special elements (sparingly)
+
+---
+
+## Interactions & Micro-animations
+
+### Button Interactions
+**Every button should react:**
+- Scale slightly on hover (1.02-1.05)
+- Lift with shadow on hover
+- Ripple effect on click
+- Loading state with spinner or progress
+- Disabled state clearly visible
+- Success state with checkmark animation
+
+### Card Interactions
+**Make cards feel alive:**
+- Lift on hover with increased shadow
+- Subtle border glow on hover
+- Tilt effect following mouse (3D transform)
+- Smooth transitions (200-300ms)
+- Click feedback for interactive cards
+
+### Form Interactions
+**Guide users through forms:**
+- Input focus states with border color change
+- Floating labels that animate up
+- Real-time validation with inline messages
+- Success checkmarks for valid inputs
+- Error states with shake animation
+- Password strength indicators
+- Character count for text areas
+
+### Page Transitions
+**Smooth between views:**
+- Fade + slide for page changes
+- Skeleton loaders during data fetch
+- Optimistic UI updates
+- Stagger animations for lists
+- Route transition animations
+
+---
+
+## Mobile Responsiveness
+
+### Mobile-First Approach
+**Design for mobile, enhance for desktop:**
+- Touch targets minimum 44x44px
+- Generous padding and spacing
+- Sticky bottom navigation on mobile
+- Collapsible sections for long content
+- Swipeable cards and galleries
+- Pull-to-refresh where appropriate
+
+### Responsive Patterns
+**Adapt layouts intelligently:**
+- Hamburger menu → full nav bar
+- Card grid → stack on mobile
+- Sidebar → drawer
+- Multi-column → single column
+- Data tables → card list
+- Hide/show elements based on viewport
+
+---
+
+## Loading & Empty States
+
+### Loading States
+**Never leave users wondering:**
+- Skeleton screens matching content layout
+- Progress bars for known durations
+- Animated placeholders
+- Spinners only for short waits (<3s)
+- Stagger loading for multiple elements
+- Shimmer effects on skeletons
+
+### Empty States
+**Make empty states helpful:**
+- Illustrations or icons
+- Helpful copy explaining why it's empty
+- Clear CTA to add first item
+- Examples or suggestions
+- No "no data" text alone
+
+---
+
+## Unique Elements to Stand Out
+
+### Distinctive Features
+**Add personality:**
+- Custom cursor effects on landing pages
+- Animated page numbers or section indicators
+- Unusual hover effects (magnification, distortion)
+- Custom scrollbars
+- Glassmorphism for overlays
+- Animated SVG icons
+- Typewriter effects for hero text
+- Confetti or celebration animations for actions
+
+### Interactive Elements
+**Engage users:**
+- Drag-and-drop interfaces
+- Sliders and range controls
+- Toggle switches with animations
+- Progress steps with animations
+- Expandable/collapsible sections
+- Tabs with slide indicators
+- Image comparison sliders
+- Interactive demos or playgrounds
+
+---
+
+## Consistency Rules
+
+### Maintain Consistency
+**What should stay consistent:**
+- Spacing scale (4px, 8px, 16px, 24px, 32px, 48px, 64px)
+- Border radius values
+- Animation timing (200ms, 300ms, 500ms)
+- Color system (primary, secondary, accent, neutrals)
+- Typography scale
+- Icon style (outline vs filled)
+- Button styles across the app
+- Form element styles
+
+### What Can Vary
+**Project-specific customization:**
+- Color palette (different colors, same system)
+- Layout creativity (grids, asymmetry)
+- Illustration style
+- Animation personality
+- Feature-specific interactions
+- Hero section design
+- Card styling variations
+- Background patterns or textures
+
+---
+
+## Technical Excellence
+
+### Performance
+- Optimize images (WebP, lazy loading)
+- Code splitting for faster loads
+- Debounce search inputs
+- Virtualize long lists
+- Minimize re-renders
+- Use proper memoization
+
+### Accessibility
+- Keyboard navigation throughout
+- ARIA labels where needed
+- Focus indicators visible
+- Screen reader friendly
+- Sufficient color contrast
+- Respect reduced motion preferences
+
+---
+
+## Key Principles
+
+1. **Be Bold** - Don't be afraid to try unique layouts and interactions
+2. **Be Consistent** - Use the same patterns for similar functions
+3. **Be Responsive** - Design works beautifully on all devices
+4. **Be Fast** - Animations are smooth, loading is quick
+5. **Be Accessible** - Everyone can use what you build
+6. **Be Modern** - Use current design trends and technologies
+7. **Be Unique** - Each project should have its own personality
+8. **Be Intuitive** - Users shouldn't need instructions
+ for bestpractices and # Audit List / Site Manager
+
+## Overview
+Develop a feature-rich Audit List / Site Manager page for the OfficeInventory AI platform. This page presents audits organized hierarchically by tenant → site → floor/zone, enables creating new audits, cloning existing audits, and navigating into site/floor details. The UI emphasizes a clear hierarchical tree, audit summary cards, bulk actions with proper permission checks, and an intuitive flow for selecting sites/floors when creating audits. Everything must be built with runtime safety in mind: guards against null/undefined, proper default initializations, and robust input validation.
+
+## Page Description (Full Detail)
+What this page is:
+- A centralized Audit List / Site Manager interface that displays audits organized by tenant, site, and floor/zone in a hierarchical, expandable tree. It also shows a gallery/list of audit cards for quick scanning and management.
+
+Goals:
+- Provide an at-a-glance overview of audits across tenants and sites.
+- Allow users to create new audits via a Create Audit modal, selecting tenant/site/floor, audit name, schedule, and assigned team.
+- Allow cloning an existing audit to duplicate configuration and tasks into a new audit.
+- Enable navigation into site and floor details to view deeper metadata, items detected, status, and review queues.
+- Support bulk actions (Export, Archive, Delete) with permission checks and audit-logging.
+
+UI elements and how they should look:
+- Hierarchy Tree: A collapsible tree showing Tenant > Site > Floor/Zone. Each node can be expanded/crolled, with inline action pills (e.g., View, Clone, Add Audit).
+- Audit Cards: Cards displaying audit title, status, item count, last updated, owner, and quick action icons (Open, Clone, Export).
+- Create Audit Modal: A modal form to create a new audit by selecting Tenant → Site → Floor/Zone, entering an audit name, choosing a schedule (date/time or recurrence), and assigning a team.
+- Bulk Actions Bar: A toolbar enabling Export, Archive, and Delete actions with user permissions checks and progress indicators.
+- Detail Navigation: Clicking a site/floor in the tree navigates to a detail panel or page showing items, AI-detected inventory, review queues, and activity logs.
+
+Visual guidance:
+- Layout emphasizes whitespace, card-based surfaces, and a left-hand navigation/branching tree with edge-to-edge cards for audit lists.
+- Use the provided color palette, typography, and spacing guidelines to ensure consistency with the enterprise design system.
+- Maintain high contrast for key actions (accent green) and strong anchors (black surfaces for navigation/summary panels).
+
+APIs connected:
+- No APIs connected in the current brief; the page should be designed to integrate with REST or GraphQL endpoints for tenants, sites, floors, audits, and audit items. Prepare data shapes and placeholders for future API wiring.
+
+PROJECT CONTEXT RELEVANCE:
+- This page is part of OfficeInventory AI – Enterprise Furniture Audit Platform. It must align with the platform’s architecture: tenant isolation, role-based access, audit logs, and scalable data models for audits, items, locations, and review decisions. The UI should support an audit lifecycle from creation through review and reporting, with a future path for 2D space planning and ESG reporting.
+
+---
+
+## Components to Build
+
+1) HierarchyTree
+- Purpose: Render hierarchical Tenant → Site → Floor/Zone with expand/collapse behavior.
+- Data shape assumptions:
+  - tenants: Array<Tenant>, where Tenant has id, name, sites: Array<Site>
+  - Site has id, name, floors: Array<Floor>, tenantId
+  - Floor has id, name, zones: Array<Zone>, siteId
+  - Zone has id, name, floorId
+- Features:
+  - Expand/collapse nodes; preserve expanded state in local UI state.
+  - Inline actions per node (View Site, View Floor, Create Audit under a specific node).
+  - Guard against null/undefined at every level; use data ?? [] with Array.isArray checks.
+- UI elements: Tree nodes with indent, chevrons, and small pill actions.
+
+2) AuditCard
+- Purpose: Display a summarized view of an audit.
+- Data shape: Audit { id, name, status, itemCount, lastUpdated, owner, siteId, floorId, zoneId, tenantId, ... }
+- Visuals: Title, status badge, item count, lastUpdated, owner avatar/name, small tags for zone/site.
+- Interactions: Open (navigate to audit detail), Clone (duplicate audit), Export (download CSV), select (for bulk actions).
+- Safety: Always guard array-derived values; treat missing counts as 0 using (audit?.itemCount ?? 0).
+
+3) CreateAuditModal
+- Purpose: Gather inputs to create a new audit with hierarchical location selection.
+- Fields:
+  - Tenant: select
+  - Site: select (filtered by tenant)
+  - Floor/Zone: select (filtered by site/floor)
+  - Audit Name: text input
+  - Schedule: date/time or recurring options
+  - Assigned Team: multi-select or single select
+- Validation: required on tenant, site, floor/zone, audit name; schedule must be valid; teams must be non-empty if required.
+- Interactions: Debounced search for tenants/sites if dataset is large; disable submit if invalid.
+- Safety: Normalize inputs; ensure defaults (empty arrays) where needed.
+
+4) BulkActionsBar
+- Purpose: Provide bulk operations: Export, Archive, Delete with permission checks.
+- Behavior: Enable when one or more audits are selected; show loading/progress states; confirm destructive actions.
+- Safety: Guard against null selections; ensure operations operate on arrays via (selection ?? []).map(...).
+
+5) SiteDetailPanel (or RouteProxy)
+- Purpose: Navigate into site/floor details; shows deeper metadata, inventory items, and review queues.
+- Data shape: SiteDetail { id, name, floors, audits, items, queues, activityLog } with proper guards.
+- Interactions: Navigate from tree or audit card; fetch related data (guarded by safety patterns).
+
+6) ActivityLogPanel
+- Optional: Show recent actions on an audit or site for audit traceability.
+
+7) toast/notification system
+- For success/failure messages of create/clone/export actions.
+
+---
+
+## Implementation Requirements
+
+### Frontend
+- Framework on offer should be React (with TypeScript preferred).
+- State management: Use React hooks; maintain local UI state for tree expansion, selection, modal visibility, and audit filters.
+- Routing: Use a router (e.g., React Router) to navigate to audit detail and site/floor detail pages.
+- Data handling patterns:
+  - All API responses must be validated: const list = Array.isArray(response?.data) ? response.data : [].
+  - Supabase-like results should use data ?? [] for lists (if integrated later).
+  - Guard all array operations: (items ?? []).map(...), Array.isArray(items) ? items.map(...) : [].
+- Components should be accessible: keyboard navigation for tree, ARIA labels for controls.
+- Accessibility: Ensure color contrast follows WCAG, provide alt text for icons, and meaningful focus states.
+- Styling: Implement according to Visual Style section, using the provided color palette, typography, spacing, and card patterns.
+- Performance: Lazy load sections of the tree as users expand; virtualization not required for MVP but consider due to potentially large tenant/site trees.
+- Testing: Add unit tests for data guards (null/undefined), tree expansion logic, and modal validation.
+
+### Backend
+- APIs (to be wired later) should expose:
+  - GET /tenants with nested sites and floors (or separate endpoints to each level)
+  - GET /audits filtered by tenant/site/floor
+  - POST /audits to create a new audit
+  - POST /audits/{id}/clone to duplicate an audit
+  - POST /audits/bulk-export
+  - POST /audits/bulk-archive
+  - DELETE /audits/bulk-delete
+  - GET /sites/{id} and GET /sites/{id}/floors for detail view
+- Data models (to be supported in future wiring):
+  - Tenant, Site, Floor, Zone
+  - Audit: id, name, status, ownerId, tenantId, siteId, floorId, zoneId, itemCount, lastUpdated
+  - AuditItem: id, type, attributes, confidence, evidenceUrl, location
+  - ActivityLog: id, auditId, action, timestamp, userId
+- Security: Ensure endpoints accommodate role-based access; support placeholder for SSO and RBAC.
+
+### Integration
+- Data flow:
+  - HierarchyTree fetches tenants/sites/floors data.
+  - AuditCard consumes audits filtered by the selected location in the tree or top-level view.
+  - CreateAuditModal feeds into POST /audits to create a new audit; upon success, refresh the relevant list and tree state.
+  - Clone action uses POST /audits/{id}/clone and refreshes the list with new audit data.
+  - BulkActionsBar dispatches to bulk endpoints and updates UI accordingly.
+  - SiteDetailPanel fetches deeper site/floor data when navigating from the tree or card interactions.
+- Data safety: All mapping and rendering should use safe guards like (data ?? []) and Array.isArray checks to prevent runtime errors.
+
+---
+
+## User Experience Flow
+
+1) Landing on Audit List / Site Manager
+- User sees a hierarchical tree on the left (Tenant → Site → Floor/Zone).
+- On the right, a grid/list of AuditCards reflecting audits in the selected location (or all audits if none selected).
+- Bulk actions bar is visible when one or more audits are selected.
+
+2) Exploring the Hierarchy
+- User expands a Tenant to reveal Sites, then Floors/Zones.
+- Clicking a Site or Floor adjusts the audit grid to show audits under that scope.
+- Hovering a card reveals quick actions (Open, Clone, Export).
+
+3) Creating a New Audit
+- User clicks Create Audit button.
+- CreateAuditModal appears. User selects Tenant → Site → Floor/Zone, enters Audit Name, selects Schedule, assigns Team.
+- Form validates; on success, API call is made to create audit; UI shows loading state and then refreshes audit list and tree.
+- After creation, user can open the new audit from the grid or navigate to its detail.
+
+4) Cloning an Audit
+- User clicks Clone on an AuditCard.
+- A new audit record is created copying configuration and tasks; UI shows success toast and updates the grid with the new audit.
+
+5) Bulk Actions
+- User selects multiple audits; BulkActionsBar activates.
+- User chooses Export/Archive/Delete; confirmation prompt shows if destructive; upon confirmation, actions are executed and results reflected in UI.
+
+6) Navigating into Site/Floor Details
+- User clicks a Site or Floor in the tree; app navigates to a detailed view (SiteDetailPanel or dedicated route) showing location metadata, item inventory, review queues, and activity logs.
+
+7) Feedback & Validation
+- All forms provide inline validation; errors use the red/orange accents for visibility.
+- Success messages appear via toasts with the lime green accent.
+
+---
+
+## Technical Specifications
+
+Data Models
+- Tenant: { id: string, name: string }
+- Site: { id: string, name: string, tenantId: string }
+- Floor: { id: string, name: string, siteId: string }
+- Zone: { id: string, name: string, floorId: string }
+- Audit: { id: string, name: string, status: string, itemCount: number, lastUpdated: string, ownerId: string, tenantId: string, siteId: string, floorId: string, zoneId: string, assignedTeamIds: string[] }
+- AuditItem: { id: string, type: string, attributes: object, confidence: number, evidenceUrl: string, location: { x: number, y: number } }
+- ActivityLog: { id: string, auditId: string, action: string, timestamp: string, userId: string }
+
+API Endpoints (to be wired)
+- GET /tenants?includeSites=true
+- GET /tenants/{tenantId}/sites
+- GET /sites/{siteId}/floors
+- GET /audits?tenantId=&siteId=&floorId=&zoneId=
+- POST /audits
+- POST /audits/{auditId}/clone
+- POST /audits/bulk-export
+- POST /audits/bulk-archive
+- DELETE /audits/bulk-delete
+- GET /sites/{siteId}
+- GET /sites/{siteId}/floors/{floorId}
+
+Security
+- Role-based access: read-only for restricted roles; create/clone/delete require appropriate permissions.
+- SSO-ready bearer token validation placeholders; ensure endpoints will enforce tenant isolation.
+
+Validation
+- Client-side:
+  - All forms use required fields; dates/times must be valid.
+  - Use default values for arrays: audit.assignedTeamIds ?? [].
+  - Guard all array operations: (array ?? []).map(...)
+- Server-side (assumed):
+  - Validate tenant/site/floor IDs exist and belong to the same tenant.
+  - Validate audit name uniqueness within the scope.
+  - Validate that bulk actions only affect audits the user can access.
+
+Accessibility
+- All interactive elements have ARIA labels.
+- Keyboard navigation for tree and modals.
+- High-contrast color states for status and actions.
+
+Error Handling
+- Graceful fallback to empty arrays when API returns null.
+- Toast notifications for errors with actionable guidance.
+
+---
+
+## Acceptance Criteria
+- [ ] HierarchyTree accurately renders Tenant → Site → Floor/Zone with proper expand/collapse behavior and null-safe data handling.
+- [ ] AuditCard grid renders audits with correct metadata and supports Open, Clone, and Export actions.
+- [ ] CreateAuditModal validates inputs, prevents submission on invalid data, and creates audits via API integration point (to be wired) with the UI updating accordingly.
+- [ ] Cloning an audit results in a new audit entry with identical configuration, accessible from the grid, and the UI refresh shows the new audit.
+- [ ] BulkActionsBar enables when at least one audit is selected and performs Export, Archive, or Delete with proper confirmations and success/failure toasts.
+- [ ] Site/Floor Detail navigation works and loads relevant data with guards against missing data.
+- [ ] All data access paths guard against null/undefined using (data ?? []) and Array.isArray checks; use useState([]) defaults for arrays.
+- [ ] API response shapes are validated: const list = Array.isArray(response?.data) ? response.data : [].
+
+---
+
+## UI/UX Guidelines
+Apply the project's design system:
+---
+Color Palette:
+- Primary background: #F5F6F8
+- Card background: #E8E9EC
+- Accent: #C9FF52
+- Surfaces: #FFFFFF for cards and modals
+- Navigation/Panel: #18191A
+- Text: #232323 primary; #6B6B6B secondary
+- Dividers: #B6B7BA
+- Errors/Warnings: #FF5E5E, #FFC85E
+- Secondary status: #6ECFFF
+
+Typography & Layout:
+- Font family: Inter, SF Pro, Circular
+- Weights: Regular, Bold, Medium
+- Spacing: 24–32px gaps; consistent vertical rhythm
+- Alignment: Left-aligned text; center-aligned key metrics; edge-to-edge cards
+- Treatments: Iconography paired with text; subtle color and weight emphasis
+
+Card Design:
+- Borderless, rounded corners 16–24px
+- Elevation via shadows; hover/active interactions
+- Hierarchy: Title > metadata > icons/tags
+
+Navigation:
+- Top bar: Pill-shaped, black surface with white and accent-green highlights
+- Sidebar: Minimal; dividers
+- Active states: Green/white on black; pill backgrounds for current section
+
+Data Visualization:
+- Card-style stat blocks; bold numerals; status pills
+
+Interactive Elements:
+- Pill-shaped buttons; filled or outlined; icons
+- Soft form fields; clear focus states
+- Hover and micro-interactions for feedback
+
+Design Philosophy:
+- Modern, minimalist, enterprise-grade; high clarity; low cognitive load
+- Emphasize whitespace, visual hierarchy, and modularity for scalability
+
+---
+
+## Mandatory Coding Standards — Runtime Safety
+CRITICAL: Use these rules in ALL generated code:
+1) Supabase-like results: Always const items = data ?? [].
+2) Array methods guarded: (items ?? []).map(...); Array.isArray(items) ? items.map(...) : [].
+3) useState for arrays: useState<Type[]>([]) as default; never use useState() for arrays.
+4) API response shapes: const list = Array.isArray(response?.data) ? response.data : [].
+5) Optional chaining: use obj?.property?.nested when accessing nested API data.
+6) Destructuring with defaults: const { items = [], count = 0 } = response ?? {}.
+
+---
+
+Generate the complete, detailed prompt now so an AI development tool can implement this feature end-to-end. for style.
+
+CRITICAL DESIGN REQUIREMENTS:
+- You MUST follow ALL design principles and patterns specified in the Design Reference above
+- Do NOT deviate from the design specifications without explicit user permission
+- Implement ALL visual design elements (colors, typography, spacing, shadows, animations) as specified
+- Follow the layout patterns and component designs exactly as documented
+- Ensure all interactions and micro-animations match the reference specifications
+
+CRITICAL TECHNICAL REQUIREMENTS:
+- React 18.3.1, React Router 6.30.1
+- Tailwind CSS v3 with tailwind.config.js and custom keyframes
+- @tailwindcss/typography plugin for rich text content
+- Tailwind CSS animations (NOT Motion library or framer-motion)
+- Sonner for toasts
+- Recharts for data visualization
+- Native fetch() with API utilities in src/lib/api.ts
+- Design system with CSS custom properties
+- Use RGB color values for theming
+- When Supabase is configured: use Edge Functions for LLM and server-only logic; never expose API keys in the client
+
+=== TASK ===
+# Audit List / Site Manager
+
+## Overview
+Develop a feature-rich Audit List / Site Manager page for the OfficeInventory AI platform. This page presents audits organized hierarchically by tenant → site → floor/zone, enables creating new audits, cloning existing audits, and navigating into site/floor details. The UI emphasizes a clear hierarchical tree, audit summary cards, bulk actions with proper permission checks, and an intuitive flow for selecting sites/floors when creating audits. Everything must be built with runtime safety in mind: guards against null/undefined, proper default initializations, and robust input validation.
+
+## Page Description (Full Detail)
+What this page is:
+- A centralized Audit List / Site Manager interface that displays audits organized by tenant, site, and floor/zone in a hierarchical, expandable tree. It also shows a gallery/list of audit cards for quick scanning and management.
+
+Goals:
+- Provide an at-a-glance overview of audits across tenants and sites.
+- Allow users to create new audits via a Create Audit modal, selecting tenant/site/floor, audit name, schedule, and assigned team.
+- Allow cloning an existing audit to duplicate configuration and tasks into a new audit.
+- Enable navigation into site and floor details to view deeper metadata, items detected, status, and review queues.
+- Support bulk actions (Export, Archive, Delete) with permission checks and audit-logging.
+
+UI elements and how they should look:
+- Hierarchy Tree: A collapsible tree showing Tenant > Site > Floor/Zone. Each node can be expanded/crolled, with inline action pills (e.g., View, Clone, Add Audit).
+- Audit Cards: Cards displaying audit title, status, item count, last updated, owner, and quick action icons (Open, Clone, Export).
+- Create Audit Modal: A modal form to create a new audit by selecting Tenant → Site → Floor/Zone, entering an audit name, choosing a schedule (date/time or recurrence), and assigning a team.
+- Bulk Actions Bar: A toolbar enabling Export, Archive, and Delete actions with user permissions checks and progress indicators.
+- Detail Navigation: Clicking a site/floor in the tree navigates to a detail panel or page showing items, AI-detected inventory, review queues, and activity logs.
+
+Visual guidance:
+- Layout emphasizes whitespace, card-based surfaces, and a left-hand navigation/branching tree with edge-to-edge cards for audit lists.
+- Use the provided color palette, typography, and spacing guidelines to ensure consistency with the enterprise design system.
+- Maintain high contrast for key actions (accent green) and strong anchors (black surfaces for navigation/summary panels).
+
+APIs connected:
+- No APIs connected in the current brief; the page should be designed to integrate with REST or GraphQL endpoints for tenants, sites, floors, audits, and audit items. Prepare data shapes and placeholders for future API wiring.
+
+PROJECT CONTEXT RELEVANCE:
+- This page is part of OfficeInventory AI – Enterprise Furniture Audit Platform. It must align with the platform’s architecture: tenant isolation, role-based access, audit logs, and scalable data models for audits, items, locations, and review decisions. The UI should support an audit lifecycle from creation through review and reporting, with a future path for 2D space planning and ESG reporting.
+
+---
+
+## Components to Build
+
+1) HierarchyTree
+- Purpose: Render hierarchical Tenant → Site → Floor/Zone with expand/collapse behavior.
+- Data shape assumptions:
+  - tenants: Array<Tenant>, where Tenant has id, name, sites: Array<Site>
+  - Site has id, name, floors: Array<Floor>, tenantId
+  - Floor has id, name, zones: Array<Zone>, siteId
+  - Zone has id, name, floorId
+- Features:
+  - Expand/collapse nodes; preserve expanded state in local UI state.
+  - Inline actions per node (View Site, View Floor, Create Audit under a specific node).
+  - Guard against null/undefined at every level; use data ?? [] with Array.isArray checks.
+- UI elements: Tree nodes with indent, chevrons, and small pill actions.
+
+2) AuditCard
+- Purpose: Display a summarized view of an audit.
+- Data shape: Audit { id, name, status, itemCount, lastUpdated, owner, siteId, floorId, zoneId, tenantId, ... }
+- Visuals: Title, status badge, item count, lastUpdated, owner avatar/name, small tags for zone/site.
+- Interactions: Open (navigate to audit detail), Clone (duplicate audit), Export (download CSV), select (for bulk actions).
+- Safety: Always guard array-derived values; treat missing counts as 0 using (audit?.itemCount ?? 0).
+
+3) CreateAuditModal
+- Purpose: Gather inputs to create a new audit with hierarchical location selection.
+- Fields:
+  - Tenant: select
+  - Site: select (filtered by tenant)
+  - Floor/Zone: select (filtered by site/floor)
+  - Audit Name: text input
+  - Schedule: date/time or recurring options
+  - Assigned Team: multi-select or single select
+- Validation: required on tenant, site, floor/zone, audit name; schedule must be valid; teams must be non-empty if required.
+- Interactions: Debounced search for tenants/sites if dataset is large; disable submit if invalid.
+- Safety: Normalize inputs; ensure defaults (empty arrays) where needed.
+
+4) BulkActionsBar
+- Purpose: Provide bulk operations: Export, Archive, Delete with permission checks.
+- Behavior: Enable when one or more audits are selected; show loading/progress states; confirm destructive actions.
+- Safety: Guard against null selections; ensure operations operate on arrays via (selection ?? []).map(...).
+
+5) SiteDetailPanel (or RouteProxy)
+- Purpose: Navigate into site/floor details; shows deeper metadata, inventory items, and review queues.
+- Data shape: SiteDetail { id, name, floors, audits, items, queues, activityLog } with proper guards.
+- Interactions: Navigate from tree or audit card; fetch related data (guarded by safety patterns).
+
+6) ActivityLogPanel
+- Optional: Show recent actions on an audit or site for audit traceability.
+
+7) toast/notification system
+- For success/failure messages of create/clone/export actions.
+
+---
+
+## Implementation Requirements
+
+### Frontend
+- Framework on offer should be React (with TypeScript preferred).
+- State management: Use React hooks; maintain local UI state for tree expansion, selection, modal visibility, and audit filters.
+- Routing: Use a router (e.g., React Router) to navigate to audit detail and site/floor detail pages.
+- Data handling patterns:
+  - All API responses must be validated: const list = Array.isArray(response?.data) ? response.data : [].
+  - Supabase-like results should use data ?? [] for lists (if integrated later).
+  - Guard all array operations: (items ?? []).map(...), Array.isArray(items) ? items.map(...) : [].
+- Components should be accessible: keyboard navigation for tree, ARIA labels for controls.
+- Accessibility: Ensure color contrast follows WCAG, provide alt text for icons, and meaningful focus states.
+- Styling: Implement according to Visual Style section, using the provided color palette, typography, spacing, and card patterns.
+- Performance: Lazy load sections of the tree as users expand; virtualization not required for MVP but consider due to potentially large tenant/site trees.
+- Testing: Add unit tests for data guards (null/undefined), tree expansion logic, and modal validation.
+
+### Backend
+- APIs (to be wired later) should expose:
+  - GET /tenants with nested sites and floors (or separate endpoints to each level)
+  - GET /audits filtered by tenant/site/floor
+  - POST /audits to create a new audit
+  - POST /audits/{id}/clone to duplicate an audit
+  - POST /audits/bulk-export
+  - POST /audits/bulk-archive
+  - DELETE /audits/bulk-delete
+  - GET /sites/{id} and GET /sites/{id}/floors for detail view
+- Data models (to be supported in future wiring):
+  - Tenant, Site, Floor, Zone
+  - Audit: id, name, status, ownerId, tenantId, siteId, floorId, zoneId, itemCount, lastUpdated
+  - AuditItem: id, type, attributes, confidence, evidenceUrl, location
+  - ActivityLog: id, auditId, action, timestamp, userId
+- Security: Ensure endpoints accommodate role-based access; support placeholder for SSO and RBAC.
+
+### Integration
+- Data flow:
+  - HierarchyTree fetches tenants/sites/floors data.
+  - AuditCard consumes audits filtered by the selected location in the tree or top-level view.
+  - CreateAuditModal feeds into POST /audits to create a new audit; upon success, refresh the relevant list and tree state.
+  - Clone action uses POST /audits/{id}/clone and refreshes the list with new audit data.
+  - BulkActionsBar dispatches to bulk endpoints and updates UI accordingly.
+  - SiteDetailPanel fetches deeper site/floor data when navigating from the tree or card interactions.
+- Data safety: All mapping and rendering should use safe guards like (data ?? []) and Array.isArray checks to prevent runtime errors.
+
+---
+
+## User Experience Flow
+
+1) Landing on Audit List / Site Manager
+- User sees a hierarchical tree on the left (Tenant → Site → Floor/Zone).
+- On the right, a grid/list of AuditCards reflecting audits in the selected location (or all audits if none selected).
+- Bulk actions bar is visible when one or more audits are selected.
+
+2) Exploring the Hierarchy
+- User expands a Tenant to reveal Sites, then Floors/Zones.
+- Clicking a Site or Floor adjusts the audit grid to show audits under that scope.
+- Hovering a card reveals quick actions (Open, Clone, Export).
+
+3) Creating a New Audit
+- User clicks Create Audit button.
+- CreateAuditModal appears. User selects Tenant → Site → Floor/Zone, enters Audit Name, selects Schedule, assigns Team.
+- Form validates; on success, API call is made to create audit; UI shows loading state and then refreshes audit list and tree.
+- After creation, user can open the new audit from the grid or navigate to its detail.
+
+4) Cloning an Audit
+- User clicks Clone on an AuditCard.
+- A new audit record is created copying configuration and tasks; UI shows success toast and updates the grid with the new audit.
+
+5) Bulk Actions
+- User selects multiple audits; BulkActionsBar activates.
+- User chooses Export/Archive/Delete; confirmation prompt shows if destructive; upon confirmation, actions are executed and results reflected in UI.
+
+6) Navigating into Site/Floor Details
+- User clicks a Site or Floor in the tree; app navigates to a detailed view (SiteDetailPanel or dedicated route) showing location metadata, item inventory, review queues, and activity logs.
+
+7) Feedback & Validation
+- All forms provide inline validation; errors use the red/orange accents for visibility.
+- Success messages appear via toasts with the lime green accent.
+
+---
+
+## Technical Specifications
+
+Data Models
+- Tenant: { id: string, name: string }
+- Site: { id: string, name: string, tenantId: string }
+- Floor: { id: string, name: string, siteId: string }
+- Zone: { id: string, name: string, floorId: string }
+- Audit: { id: string, name: string, status: string, itemCount: number, lastUpdated: string, ownerId: string, tenantId: string, siteId: string, floorId: string, zoneId: string, assignedTeamIds: string[] }
+- AuditItem: { id: string, type: string, attributes: object, confidence: number, evidenceUrl: string, location: { x: number, y: number } }
+- ActivityLog: { id: string, auditId: string, action: string, timestamp: string, userId: string }
+
+API Endpoints (to be wired)
+- GET /tenants?includeSites=true
+- GET /tenants/{tenantId}/sites
+- GET /sites/{siteId}/floors
+- GET /audits?tenantId=&siteId=&floorId=&zoneId=
+- POST /audits
+- POST /audits/{auditId}/clone
+- POST /audits/bulk-export
+- POST /audits/bulk-archive
+- DELETE /audits/bulk-delete
+- GET /sites/{siteId}
+- GET /sites/{siteId}/floors/{floorId}
+
+Security
+- Role-based access: read-only for restricted roles; create/clone/delete require appropriate permissions.
+- SSO-ready bearer token validation placeholders; ensure endpoints will enforce tenant isolation.
+
+Validation
+- Client-side:
+  - All forms use required fields; dates/times must be valid.
+  - Use default values for arrays: audit.assignedTeamIds ?? [].
+  - Guard all array operations: (array ?? []).map(...)
+- Server-side (assumed):
+  - Validate tenant/site/floor IDs exist and belong to the same tenant.
+  - Validate audit name uniqueness within the scope.
+  - Validate that bulk actions only affect audits the user can access.
+
+Accessibility
+- All interactive elements have ARIA labels.
+- Keyboard navigation for tree and modals.
+- High-contrast color states for status and actions.
+
+Error Handling
+- Graceful fallback to empty arrays when API returns null.
+- Toast notifications for errors with actionable guidance.
+
+---
+
+## Acceptance Criteria
+- [ ] HierarchyTree accurately renders Tenant → Site → Floor/Zone with proper expand/collapse behavior and null-safe data handling.
+- [ ] AuditCard grid renders audits with correct metadata and supports Open, Clone, and Export actions.
+- [ ] CreateAuditModal validates inputs, prevents submission on invalid data, and creates audits via API integration point (to be wired) with the UI updating accordingly.
+- [ ] Cloning an audit results in a new audit entry with identical configuration, accessible from the grid, and the UI refresh shows the new audit.
+- [ ] BulkActionsBar enables when at least one audit is selected and performs Export, Archive, or Delete with proper confirmations and success/failure toasts.
+- [ ] Site/Floor Detail navigation works and loads relevant data with guards against missing data.
+- [ ] All data access paths guard against null/undefined using (data ?? []) and Array.isArray checks; use useState([]) defaults for arrays.
+- [ ] API response shapes are validated: const list = Array.isArray(response?.data) ? response.data : [].
+
+---
+
+## UI/UX Guidelines
+Apply the project's design system:
+---
+Color Palette:
+- Primary background: #F5F6F8
+- Card background: #E8E9EC
+- Accent: #C9FF52
+- Surfaces: #FFFFFF for cards and modals
+- Navigation/Panel: #18191A
+- Text: #232323 primary; #6B6B6B secondary
+- Dividers: #B6B7BA
+- Errors/Warnings: #FF5E5E, #FFC85E
+- Secondary status: #6ECFFF
+
+Typography & Layout:
+- Font family: Inter, SF Pro, Circular
+- Weights: Regular, Bold, Medium
+- Spacing: 24–32px gaps; consistent vertical rhythm
+- Alignment: Left-aligned text; center-aligned key metrics; edge-to-edge cards
+- Treatments: Iconography paired with text; subtle color and weight emphasis
+
+Card Design:
+- Borderless, rounded corners 16–24px
+- Elevation via shadows; hover/active interactions
+- Hierarchy: Title > metadata > icons/tags
+
+Navigation:
+- Top bar: Pill-shaped, black surface with white and accent-green highlights
+- Sidebar: Minimal; dividers
+- Active states: Green/white on black; pill backgrounds for current section
+
+Data Visualization:
+- Card-style stat blocks; bold numerals; status pills
+
+Interactive Elements:
+- Pill-shaped buttons; filled or outlined; icons
+- Soft form fields; clear focus states
+- Hover and micro-interactions for feedback
+
+Design Philosophy:
+- Modern, minimalist, enterprise-grade; high clarity; low cognitive load
+- Emphasize whitespace, visual hierarchy, and modularity for scalability
+
+---
+
+## Mandatory Coding Standards — Runtime Safety
+CRITICAL: Use these rules in ALL generated code:
+1) Supabase-like results: Always const items = data ?? [].
+2) Array methods guarded: (items ?? []).map(...); Array.isArray(items) ? items.map(...) : [].
+3) useState for arrays: useState<Type[]>([]) as default; never use useState() for arrays.
+4) API response shapes: const list = Array.isArray(response?.data) ? response.data : [].
+5) Optional chaining: use obj?.property?.nested when accessing nested API data.
+6) Destructuring with defaults: const { items = [], count = 0 } = response ?? {}.
+
+---
+
+Generate the complete, detailed prompt now so an AI development tool can implement this feature end-to-end.
+
+=== SUCCESS CRITERIA ===
+# Success Criteria Checklist
+
+## Code Quality
+
+### TypeScript
+- [ ] No TypeScript errors (`tsc --noEmit` passes)
+- [ ] All functions and components have proper type definitions
+- [ ] No `any` types used (use `unknown` if type is truly unknown)
+- [ ] Props interfaces defined for all components
+- [ ] API responses have type definitions
+
+### Code Standards
+- [ ] All imports use path aliases (@/ prefix)
+- [ ] Components follow the established naming convention
+- [ ] Files are organized in correct directories
+- [ ] No unused imports or variables
+- [ ] Consistent code formatting
+
+## Component Implementation
+
+### UI Components
+- [ ] Use shadcn/ui components (Button, Card, Input, etc.) instead of building from scratch
+- [ ] All interactive elements have hover states
+- [ ] Components use the `cn()` utility for class merging
+- [ ] Proper TypeScript props interfaces defined
+- [ ] Components are responsive (mobile, tablet, desktop)
+
+### Animations
+- [ ] Motion library used for all animations (NOT framer-motion)
+- [ ] Page transitions implemented with fade/slide
+- [ ] Interactive elements have whileHover/whileTap animations
+- [ ] List items use stagger animations where appropriate
+- [ ] Animations respect `prefers-reduced-motion`
+
+### Icons
+- [ ] Lucide React icons used consistently
+- [ ] Icons have consistent sizing (h-4 w-4, h-5 w-5, h-6 w-6)
+- [ ] Icon colors match design system (text-primary, text-muted-foreground)
+
+## Data Management
+
+### React Query
+- [ ] All data fetching uses React Query hooks
+- [ ] Query keys follow the established pattern
+- [ ] Mutations invalidate related queries
+- [ ] Loading and error states handled
+- [ ] Optimistic updates implemented where appropriate
+
+### Forms
+- [ ] Forms use react-hook-form
+- [ ] Validation uses Zod schemas
+- [ ] Error messages display properly
+- [ ] Form submission shows loading state
+- [ ] Success/error feedback via toast notifications
+
+### API Layer
+- [ ] API functions in src/api/ directory
+- [ ] Axios used for HTTP requests
+- [ ] Proper error handling with try/catch
+- [ ] Auth tokens handled by interceptors
+- [ ] Type-safe API function signatures
+
+## User Experience
+
+### Notifications
+- [ ] Sonner toasts used for all notifications
+- [ ] Success actions show success toast
+- [ ] Errors show descriptive error messages
+- [ ] Loading states show toast.loading()
+
+### Loading States
+- [ ] Skeleton loaders shown during data fetch
+- [ ] Buttons show loading state during submission
+- [ ] Disabled state applied during async operations
+
+### Error Handling
+- [ ] Network errors caught and displayed
+- [ ] User-friendly error messages (no stack traces)
+- [ ] Fallback UI for error states
+- [ ] No unhandled promise rejections
+
+## Navigation
+
+### Route Accessibility
+- [ ] All pages have routes defined in router configuration
+- [ ] Every page is accessible through navigation (menu, sidebar, or direct URL)
+- [ ] Main pages (Dashboard, Home, Settings, etc.) accessible from primary navigation
+- [ ] Secondary pages accessible through contextual navigation or direct links
+- [ ] Deep-linked pages have breadcrumbs or back navigation
+- [ ] 404/Not Found page implemented for invalid routes
+- [ ] Protected routes have proper authentication checks
+- [ ] Navigation state persists across page refreshes where appropriate
+
+### Navigation UX
+- [ ] Active route highlighted in navigation menu
+- [ ] Clear visual hierarchy in navigation structure
+- [ ] Mobile navigation is accessible and usable
+- [ ] Navigation items have hover/focus states
+- [ ] Nested routes show parent-child relationships
+- [ ] User can always return to main areas (Dashboard/Home)
+
+## Styling
+
+### Tailwind CSS
+- [ ] Tailwind v3 classes used
+- [ ] HSL color variables from design system
+- [ ] Custom CSS properties used where defined
+- [ ] Responsive breakpoints: mobile-first approach
+- [ ] Dark mode support via CSS variables
+
+### Design System
+- [ ] Colors use theme variables (primary, secondary, accent)
+- [ ] Spacing uses Tailwind scale (p-4, gap-6, etc.)
+- [ ] Border radius uses theme values (rounded-lg)
+- [ ] Shadows use theme values (shadow-card)
+- [ ] Typography follows Inter font system
+
+## Accessibility
+
+- [ ] Semantic HTML elements used
+- [ ] Buttons have descriptive labels
+- [ ] Forms have proper labels
+- [ ] Focus states visible on interactive elements
+- [ ] Color contrast meets WCAG standards
+
+## Performance
+
+- [ ] No console.log statements in production code
+- [ ] No console errors in browser
+- [ ] Images optimized (WebP, lazy loading)
+- [ ] Large lists use virtualization if needed
+- [ ] React Query cache configured appropriately
+
+## Testing Readiness
+
+- [ ] Components structured for easy testing
+- [ ] Business logic separated from presentation
+- [ ] Mock-friendly API layer
+- [ ] No hardcoded values that should be configurable
+- [ ] Environment variables properly configured
+
+## Final Checks
+
+- [ ] Code builds without errors (`npm run build`)
+- [ ] Development server runs without errors (`npm run dev`)
+- [ ] No TypeScript errors in editor
+- [ ] Browser console is clean (no errors or warnings)
+- [ ] All functionality works as expected
+- [ ] Code follows existing project patterns
+- [ ] Changes are consistent with the rest of the codebase
+
+
+
+IMPORTANT: ALL styling and design decisions must follow the Design Reference section above EXACTLY. Do not make arbitrary design choices.
+
+Analyze the existing project structure and implement the task following the patterns already established. Ensure all success criteria are met.
