@@ -327,77 +327,54 @@ All dashboard pages should be nested inside the dashboard layout, not separate r
 ## User Design Requirements
 
 ---
-Visual Style
+## Visual Style
 
-Color Palette:
+### Color Palette
 - Primary background: Soft light gray (#F5F6F8)
-- Card backgrounds: Slightly darker gray (#E8E9EC)
-- Accent color: Vibrant lime green (#C9FF52)
-- White surfaces: #FFFFFF
-- Navigation/summary panels: Deep black (#18191A)
-- Dividers/Mute text: Mid-gray (#B6B7BA)
-- Text: Primary #232323, Secondary #6B6B6B, on dark: #FFFFFF
-- Warnings/Errors: Red #FF5E5E
-- Secondary status: Orange #FFC85E, Sky blue #6ECFFF
+- Card background: Slightly darker gray (#E8E9EC)
+- Accent: Vibrant lime green (#C9FF52)
+- Surfaces: Pure white (#FFFFFF)
+- Navigation/ Panels: Deep black (#18191A)
+- Dividers/Muted text: Mid-gray (#B6B7BA)
+- Text: Primary dark gray (#232323); secondary text #6B6B6B; white on dark backgrounds
+- Status/Alerts: Red (#FF5E5E) for errors, Orange (#FFC85E) for warnings, Sky blue (#6ECFFF) for secondary tags
 
-Typography & Layout:
-- Font family: Inter, SF Pro, or Circular
-- Weights: Regular body, bold headings, medium labels/CTAs
-- Hierarchy: Large bold headings; medium subheads; lighter metadata
-- Spacing: 24–32px padding/margins; consistent vertical rhythm
-- Alignment: Left-text, center metrics, edge-to-edge card layouts
-- Treatments: Iconography with text for clarity
+### Typography & Layout
+- Font family: Inter, SF Pro, or Circular (geometric sans-serif)
+- Font weights: Regular (body), Bold (heading), Medium (labels/CTAs)
+- Hierarchy: Large bold headings, medium subheads, light metadata
+- Spacing: Generous padding/margins between cards and sections (24–32px)
+- Alignment: Left-aligned text; center-aligned key metrics; edge-to-edge card layouts
+- Treatments: Color and weight for emphasis; iconography with text
 
-Key Design Elements
+### Key Design Elements
 
-Card Design:
-- Rounded corners 16–24px
-- Mild drop shadows for elevation
-- Hover/active: stronger shadow; accent green highlight for selected items
-- Visual hierarchy: Title, metadata, icons/tags at bottom
+#### Card Design
+- Rounded corners: 16–24px
+- Elevation: Mild drop shadows
+- Hover/Active: Subtle shadow or outline; accent green highlight for selections
+- Visual hierarchy: Prominent title, metadata, compact icons/tags at bottom
 
-Navigation:
-- Top bar: Pill-shaped, black with white/green accents
-- Sidebar: Minimal vertical icon stack
-- Active states: Green/white on black
-- Collapsible/expandable: Not required but architecture supports expansion
+#### Navigation
+- Top bar: Pill-shaped, black with white and accent green highlights
+- Sidebar: Minimal vertical icon stack with subtle dividers
+- Active states: Green or white on black; pill backgrounds for current section
+- Expandability: Design supports modular expansion
 
-Data Visualization:
-- Summary panels imply bold numerals with compact labels
-- Accent colors for status; white/black surfaces for separation
-- Inline mini-charts or status pills implied for quick-glance metrics
+#### Data Visualization
+- Not primary; use card-style stat blocks for summary; inline status pills for quick-glance metrics
 
-Interactive Elements:
-- Buttons: Rounded pills, filled (green/black) or outlined
-- Form elements: Soft rounded fields
-- Hover: Shadow/enhanced transitions
-- Micro-interactions: Subtle icon movement/scale
+#### Interactive Elements
+- Buttons: Rounded pill-shaped; filled with accent green or black, or outlined
+- Forms: Soft rounded fields with subtle shadows/outlines; clear focus states
+- Hover effects: Subtle shadows, transitions, micro-interactions
 
-Design Philosophy:
-- Modern, minimalist, professional aesthetic
-- Focus on clarity, whitespace, and actionable elements
-- Rounded shapes; high-contrast accents
-- Frictionless navigation; quick scanning; clear status feedback
+### Design Philosophy
+- Modern, minimalist, enterprise-grade aesthetic
+- Simplicity, whitespace, clear hierarchy to reduce cognitive load
+- Rounded shapes, high-contrast accents to guide attention
+- Frictionless navigation, quick scanning, decisive actions with clear feedback
 - Modular, scalable for future workflows
-
----
-
-Mandatory Coding Standards — Runtime Safety
-
-CRITICAL: Follow these rules in ALL generated code to prevent runtime crashes.
-
-1. Supabase query results: Always use nullish coalescing — const items = data ?? []
-2. Array methods: Guard before use - (items ?? []).map(...) or Array.isArray(items) ? items.map(...) : []
-3. React useState for arrays/objects: Initialize arrays with correct type — useState<Type[]>([])
-4. API response shapes: Validate — const list = Array.isArray(response?.data) ? response.data : []
-5. Optional chaining: Use obj?.property?.nested
-6. Destructuring with defaults: const { items = [], count = 0 } = response ?? {}
-
-PROJECT CONTEXT SUMMARY
-- Target Page: Audit Detail
-- Description: Detailed view of a single audit record with site/floor/room context, detected item list, summary stats, and quick links to review tasks
-- Architecture: Enterprise-grade, modular, with strong runtime safety
-- Data: No external API requirements in MVP; structure to accommodate existing backend if present
 
 ---
 
