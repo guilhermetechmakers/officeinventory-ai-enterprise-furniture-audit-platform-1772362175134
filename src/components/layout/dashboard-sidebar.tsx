@@ -10,6 +10,7 @@ import {
   BarChart3,
   Settings,
   Users,
+  UserCircle,
   ChevronLeft,
   ChevronRight,
   Upload,
@@ -32,6 +33,7 @@ const navItems = [
 ]
 
 const adminItems = [
+  { to: '/dashboard/profile', icon: UserCircle, label: 'Profile' },
   { to: '/dashboard/admin', icon: Settings, label: 'Admin' },
   { to: '/dashboard/users', icon: Users, label: 'Users' },
 ]
