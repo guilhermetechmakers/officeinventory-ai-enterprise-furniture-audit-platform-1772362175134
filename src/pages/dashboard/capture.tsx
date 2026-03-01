@@ -1,147 +1,242 @@
-import { useState } from 'react'
-import { Camera, Upload, MapPin, ImagePlus } from 'lucide-react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+/**
+ * Capture Upload (Mobile) - Offline-first photo capture and batch upload
+ * Mobile-optimized for field auditors and facility teams
+ */
+
+import { useState, useCallback, useEffect } from 'react'
+import { Upload } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Badge } from '@/components/ui/badge'
-import { cn } from '@/lib/utils'
+import { toast } from 'sonner'
+import {
+  CaptureArea,
+  LocationSelector,
+  BatchMetadataForm,
+  GuidanceOverlay,
+  StatusPanel,
+  OfflineQueue,
+  mapBatchesToDisplay,
+} from '@/components/capture'
+import type { CapturedImage } from '@/components/capture'
+import type { BatchMetadata } from '@/components/capture'
+import { useOfflineQueue } from '@/hooks/use-offline-queue'
+import { useOfflineUploadManager } from '@/hooks/use-offline-upload-manager'
+import type { Location } from '@/types/capture-upload'
+
+const MIN_PHOTOS = 1
 
 export function CapturePage() {
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
-  const [isDragging, setIsDragging] = useState(false)
+  const [images, setImages] = useState<CapturedImage[]>([])
+  const [location, setLocation] = useState<Location>({
+    siteId: '',
+    floorId: '',
+    roomId: '',
+  })
+  const [metadata, setMetadata] = useState<BatchMetadata>({
+    batchName: '',
+    inspector: '',
+    timestamp: new Date().toISOString().slice(0, 16),
+    notes: '',
+    tags: [],
+  })
+  const [isOnline, setIsOnline] = useState(
+    typeof navigator !== 'undefined' ? navigator.onLine : true
+  )
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragging(false)
-    const files = Array.from(e.dataTransfer.files).filter((f) =>
-      f.type.startsWith('image/')
-    )
-    setSelectedFiles((prev) => [...prev, ...files])
-  }
+  const {
+    batches,
+    isHydrated,
+    addBatch,
+    updateBatchImages,
+    removeBatch,
+    totalItems,
+    uploadedCount,
+    failedCount,
+    queuedCount,
+    uploadingCount,
+  } = useOfflineQueue()
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files ? Array.from(e.target.files) : []
-    setSelectedFiles((prev) => [...prev, ...files])
-  }
+  const { uploadBatch, retryFailed } = useOfflineUploadManager(updateBatchImages)
 
-  const removeFile = (index: number) => {
-    setSelectedFiles((prev) => prev.filter((_, i) => i !== index))
-  }
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const handleOnline = () => setIsOnline(true)
+    const handleOffline = () => setIsOnline(false)
+    window.addEventListener('online', handleOnline)
+    window.addEventListener('offline', handleOffline)
+    return () => {
+      window.removeEventListener('online', handleOnline)
+      window.removeEventListener('offline', handleOffline)
+    }
+  }, [])
+
+  const canQueue =
+    Boolean(location.siteId) &&
+    Boolean(location.floorId) &&
+    Boolean(location.roomId) &&
+    (images ?? []).length >= MIN_PHOTOS
+
+  const handleQueueForUpload = useCallback(async () => {
+    if (!canQueue) {
+      if (!location.roomId) {
+        toast.error('Please select a site, floor, and room.')
+      } else if ((images ?? []).length < MIN_PHOTOS) {
+        toast.error(`Add at least ${MIN_PHOTOS} photo${MIN_PHOTOS !== 1 ? 's' : ''} to queue.`)
+      }
+      return
+    }
+
+    const imageList = images ?? []
+    if (imageList.length === 0) {
+      toast.error('No images to queue.')
+      return
+    }
+
+    try {
+      const { batchId, stored } = await addBatch(
+        {
+          siteId: location.siteId,
+          floorId: location.floorId,
+          roomId: location.roomId,
+          batchName: metadata.batchName || `Batch ${new Date().toLocaleString()}`,
+          inspector: metadata.inspector,
+          timestamp: metadata.timestamp
+            ? new Date(metadata.timestamp).toISOString()
+            : new Date().toISOString(),
+          notes: metadata.notes,
+          tags: metadata.tags ?? [],
+        },
+        imageList.map((img) => ({
+          imageUri: img.uri,
+          mimeType: img.mimeType,
+          size: img.size,
+        }))
+      )
+
+      setImages([])
+      setMetadata((prev) => ({
+        ...prev,
+        batchName: '',
+        notes: '',
+        tags: [],
+      }))
+      toast.success('Batch queued for upload.')
+
+      if (stored && isOnline) {
+        await uploadBatch(batchId, stored.images ?? [])
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to queue batch.')
+    }
+  }, [
+    canQueue,
+    location,
+    images,
+    metadata,
+    addBatch,
+    isOnline,
+    uploadBatch,
+  ])
+
+  const handleRetry = useCallback(
+    async (batchId: string, batchImages: Parameters<typeof retryFailed>[1]) => {
+      await retryFailed(batchId, batchImages)
+    },
+    [retryFailed]
+  )
+
+  const displayBatches = mapBatchesToDisplay(
+    batches.map((b) => ({
+      id: b.id,
+      batch: b.batch,
+      images: b.images ?? [],
+      createdAt: b.createdAt,
+    }))
+  )
+
+  const lastUploadTime =
+    batches.length > 0
+      ? (() => {
+          const withUploaded = (batches ?? []).flatMap((b) =>
+            (b.images ?? []).filter((i) => i.uploadedAt).map((i) => i.uploadedAt!)
+          )
+          if (withUploaded.length === 0) return undefined
+          const latest = withUploaded.sort().pop()
+          return latest ? new Date(latest).toLocaleTimeString() : undefined
+        })()
+      : undefined
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <div>
-        <h1 className="text-2xl font-bold">Capture Upload</h1>
-        <p className="text-muted-foreground mt-1">
-          Mobile-first, offline-tolerant photo capture and batch upload
-        </p>
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">Capture Upload</h1>
+            <p className="text-muted-foreground mt-1">
+              Mobile-first, offline-tolerant photo capture and batch upload
+            </p>
+          </div>
+          <GuidanceOverlay
+            minPhotos={MIN_PHOTOS}
+            currentCount={(images ?? []).length}
+          />
+        </div>
+        <StatusPanel
+          totalItems={totalItems}
+          uploadedCount={uploadedCount}
+          failedCount={failedCount}
+          queuedCount={queuedCount}
+          uploadingCount={uploadingCount}
+          lastUploadTime={lastUploadTime}
+          isOnline={isOnline}
+        />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Location picker */}
-        <Card className="lg:col-span-1">
-          <CardHeader>
-            <CardTitle>Location</CardTitle>
-            <CardDescription>Select site, floor, and room</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Site</Label>
-              <Input placeholder="Select site" />
-            </div>
-            <div className="space-y-2">
-              <Label>Floor</Label>
-              <Input placeholder="Select floor" />
-            </div>
-            <div className="space-y-2">
-              <Label>Room / Zone</Label>
-              <Input placeholder="Select room or zone" />
-            </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <MapPin className="h-4 w-4" />
-              Recent: Building A, Floor 2
-            </div>
-          </CardContent>
-        </Card>
+      {!isHydrated ? (
+        <div className="rounded-2xl border border-border bg-card p-12 text-center">
+          <p className="text-muted-foreground">Loading queue...</p>
+        </div>
+      ) : (
+        <>
+          <div className="grid gap-6 lg:grid-cols-3">
+            <LocationSelector
+              value={location}
+              onChange={setLocation}
+              error={
+                canQueue ? undefined : location.siteId && location.floorId && !location.roomId
+                  ? 'Select a room before queuing'
+                  : undefined
+              }
+            />
 
-        {/* Upload area */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Photos</CardTitle>
-            <CardDescription>
-              Capture or select from camera roll. Add batch metadata before upload.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div
-              onDragOver={(e) => {
-                e.preventDefault()
-                setIsDragging(true)
-              }}
-              onDragLeave={() => setIsDragging(false)}
-              onDrop={handleDrop}
-              className={cn(
-                'border-2 border-dashed rounded-2xl p-12 text-center transition-colors',
-                isDragging ? 'border-primary bg-primary/5' : 'border-border'
-              )}
-            >
-              <Camera className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-              <p className="font-medium mb-2">Upload photos</p>
-              <p className="text-sm text-muted-foreground mb-4">
-                Drag and drop or click to select
-              </p>
-              <div className="flex gap-2 justify-center">
-                <label className="inline-flex h-11 cursor-pointer items-center justify-center rounded-full bg-primary px-6 font-medium text-primary-foreground transition-colors hover:bg-primary/90">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    className="hidden"
-                    onChange={handleFileSelect}
-                  />
-                  Select files
-                </label>
-                <Button variant="outline">
-                  <ImagePlus className="h-4 w-4 mr-2" />
-                  Capture
-                </Button>
-              </div>
+            <div className="lg:col-span-2 space-y-6">
+              <CaptureArea
+                images={images}
+                onImagesChange={setImages}
+                minCount={MIN_PHOTOS}
+              />
+
+              <BatchMetadataForm value={metadata} onChange={setMetadata} />
+
+              <Button
+                className="w-full rounded-full h-12 text-base min-h-[48px]"
+                onClick={handleQueueForUpload}
+                disabled={!canQueue || uploadingCount > 0}
+                aria-label="Queue batch for upload"
+              >
+                <Upload className="h-5 w-5 mr-2" />
+                Queue for Upload
+              </Button>
             </div>
+          </div>
 
-            {selectedFiles.length > 0 && (
-              <div className="space-y-2">
-                <p className="text-sm font-medium">
-                  {selectedFiles.length} file(s) selected
-                </p>
-                <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
-                  {selectedFiles.map((file, i) => (
-                    <Badge
-                      key={i}
-                      variant="secondary"
-                      className="cursor-pointer gap-1"
-                      onClick={() => removeFile(i)}
-                    >
-                      {file.name.slice(0, 20)}...
-                      <span className="ml-1">×</span>
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Badge variant="outline">Offline queue: 0</Badge>
-              <span>Photos will sync when online</span>
-            </div>
-
-            <Button className="w-full rounded-full" disabled={selectedFiles.length === 0}>
-              <Upload className="h-4 w-4 mr-2" />
-              Upload batch
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+          <OfflineQueue
+            batches={displayBatches}
+            onRetry={handleRetry}
+            onRemove={removeBatch}
+            isUploading={uploadingCount > 0}
+          />
+        </>
+      )}
     </div>
   )
 }
