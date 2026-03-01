@@ -1,39 +1,72 @@
-import { Settings, Users, Shield, CreditCard } from 'lucide-react'
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Link } from 'react-router-dom'
+import * as React from 'react'
+import { useLocation } from 'react-router-dom'
+import {
+  AdminDashboardShell,
+  AdminOverview,
+  TenantSettingsPanel,
+  SSOConfigurationPanel,
+  UserManagementPanel,
+  SystemHealthPanel,
+  BillingOverviewPanel,
+  AuditLogPanel,
+} from '@/components/admin'
+import type { AdminSection } from '@/types/admin'
 
-const adminSections = [
-  { to: '/dashboard/settings', icon: Settings, title: 'Tenant settings', description: 'Configure inference, exports, storage' },
-  { to: '/dashboard/users', icon: Users, title: 'User management', description: 'Invite users, assign roles' },
-  { to: '#', icon: Shield, title: 'SSO config', description: 'SAML/OIDC setup and test' },
-  { to: '#', icon: CreditCard, title: 'Billing', description: 'Usage and billing overview' },
+const sections: AdminSection[] = [
+  'overview',
+  'tenants',
+  'sso',
+  'users',
+  'health',
+  'billing',
+  'audit',
 ]
 
-export function AdminPage() {
-  return (
-    <div className="space-y-8 animate-fade-in">
-      <div>
-        <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-        <p className="text-muted-foreground mt-1">
-          Tenant & system administration
-        </p>
-      </div>
+function isValidSection(s: string): s is AdminSection {
+  return sections.includes(s as AdminSection)
+}
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        {adminSections.map((section) => (
-          <Link key={section.title} to={section.to ?? '#'}>
-            <Card className="h-full transition-all duration-300 hover:shadow-elevated hover:border-primary/30">
-              <CardHeader>
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/20 mb-2">
-                  <section.icon className="h-6 w-6 text-primary" />
-                </div>
-                <CardTitle>{section.title}</CardTitle>
-                <CardDescription>{section.description}</CardDescription>
-              </CardHeader>
-            </Card>
-          </Link>
-        ))}
-      </div>
-    </div>
+export function AdminPage() {
+  const location = useLocation()
+  const stateSection = (location.state as { section?: string } | null)?.section
+  const [activeSection, setActiveSection] = React.useState<AdminSection>(() => {
+    if (stateSection && isValidSection(stateSection)) return stateSection
+    return 'overview'
+  })
+
+  React.useEffect(() => {
+    if (stateSection && isValidSection(stateSection)) {
+      setActiveSection(stateSection)
+    }
+  }, [stateSection])
+
+  const renderContent = () => {
+    switch (activeSection) {
+      case 'overview':
+        return <AdminOverview onSectionChange={setActiveSection} />
+      case 'tenants':
+        return <TenantSettingsPanel />
+      case 'sso':
+        return <SSOConfigurationPanel />
+      case 'users':
+        return <UserManagementPanel />
+      case 'health':
+        return <SystemHealthPanel />
+      case 'billing':
+        return <BillingOverviewPanel />
+      case 'audit':
+        return <AuditLogPanel />
+      default:
+        return <AdminOverview />
+    }
+  }
+
+  return (
+    <AdminDashboardShell
+      activeSection={activeSection}
+      onSectionChange={setActiveSection}
+    >
+      {renderContent()}
+    </AdminDashboardShell>
   )
 }

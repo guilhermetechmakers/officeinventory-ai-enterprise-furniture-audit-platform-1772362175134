@@ -326,39 +326,281 @@ All dashboard pages should be nested inside the dashboard layout, not separate r
 
 ## User Design Requirements
 
+- Use high-contrast accent green for primary actions and active statuses
+- Maintain a balanced visual hierarchy with prominent headings and clear labels
+- Ensure edge-to-edge card layouts with left-aligned text and center-aligned key metrics
+- Subtle hover effects and micro-interactions to convey interactivity
+- Ensure accessibility considerations (keyboard navigation, focus rings, readable color contrast)
+
+API integrations:
+- There are no external APIs connected in this MVP, but internal endpoints should be designed for tenant isolation and future extension to SSO providers, user directory services, and billing systems.
+
+## Components to Build
+- AdminDashboardShell
+  - Layout: Top navigation bar, left sidebar, content area
+  - State: ActiveSection, userPermissions, theme tokens
+- TenantSettingsPanel
+  - Create/Update Tenant form (name, domain, allowedSites, quotas)
+  - Site creation workflow with stepper
+  - Validation and live previews
+- SSOConfigurationPanel
+  - SAML/OIDC configuration forms
+  - Certificate management, metadata import, and test connection
+  - Validation of endpoints and assertions
+- UserManagementPanel
+  - Invite user form (email, role, tenant scope)
+  - User list with search, filters, pagination
+  - Role assignment UI (role picker, permissions summary)
+  - Activate/Deactivate, lockout, and audit actions
+- SystemHealthPanel
+  - Health metrics cards (queue depths, storage usage, error rates)
+  - Time-series mini-charts placeholders or embedded charts
+  - Alerts panel with actionable items
+- BillingOverviewPanel
+  - Subscription tier display, usage credits, invoices
+  - Payment status indicators, renewal date, upgrade prompts
+  - Invoice list with download actions
+- GenericDataTable
+  - Reusable table with selection, bulk actions, sorting, and pagination
+- ValidationErrorTooltip
+  - Consistent inline validation UX for forms
+- NotificationToast
+  - Success/error/warning toasts with auto-dismiss and action buttons
+- AuditLogPanel (optional)
+  - View and filter admin action logs
+- ConfirmDialog
+  - Reusable modal for destructive or critical actions
+
+Technical details for components:
+- Use consistent prop shapes and TypeScript interfaces
+- Guard all data accesses for null/undefined
+- Always validate API responses and normalize data
+- Ensure all arrays are initialized as empty arrays and guarded with Array.isArray checks
+- Use data ?? [] for Supabase-like results and Array.isArray guards where arrays are expected
+
+## Implementation Requirements
+
+### Frontend
+- Framework: React with TypeScript (next.js or CRA-based, depending on project)
+- State management: useState and useReducer for local UI state; optional context or lightweight state store for cross-panel data
+- Hooks: Custom hooks for data fetching, mutations, and form handling with null safety
+- Components: Reusable, composable UI units following the design system
+- UI libraries: Prefer native components or your existing design system tokens; avoid injecting raw nulls into maps or renders
+- Forms: Controlled components with explicit default values; initialize arrays as [] via useState<Type[]>([])
+- Data handling: Guard all operations with (array ?? []).map(...) or Array.isArray(array) ? array.map(...) : []
+- API integration (mocked or internal): Define fetch endpoints for tenants, SSO, users, health, and billing. Validate responses:
+  - const list = Array.isArray(response?.data) ? response.data : []
+  - const { count = 0 } = response ?? {}
+- Validation: Client-side validation with descriptive error messages; server-side safe fallbacks
+- Accessibility: ARIA roles, semantic HTML, keyboard focus management
+
+### Backend
+- Endpoints (internal):
+  - Tenant Settings
+    - GET /api/admin/tenants
+    - POST /api/admin/tenants
+    - PUT /api/admin/tenants/{id}
+  - SSO Configuration
+    - GET /api/admin/sso
+    - POST /api/admin/sso/test
+    - PUT /api/admin/sso/{id}
+  - User Management
+    - GET /api/admin/users
+    - POST /api/admin/users/invite
+    - PATCH /api/admin/users/{id}/activate
+    - PATCH /api/admin/users/{id}/deactivate
+    - GET /api/admin/roles
+    - POST /api/admin/roles
+  - System Health
+    - GET /api/admin/health
+  - Billing
+    - GET /api/admin/billing
+    - GET /api/admin/billing/invoices
+- Database schema (high level):
+  - Tenants (id, name, domain, createdAt, settings)
+  - Users (id, email, tenantId, isActive, roles, invitedAt)
+  - Roles (id, name, permissions[])
+  - SSOConfigs (id, tenantId, type, config, status)
+  - HealthMetrics (id, tenantId, metricName, value, timestamp)
+  - Invoices (id, tenantId, periodStart, periodEnd, total, status)
+- Data modeling guidance:
+  - Use strict types; ensure tenant isolation at every access point
+  - Store roles and permissions as arrays; validate on write
+  - Use audit logs for admin actions
+- Security:
+  - Ensure authentication and authorization checks per endpoint
+  - Encrypt sensitive fields at rest; enforce least privilege
+  - Require CSRF protection for state-changing actions if applicable
+- Validation:
+  - Validate inputs server-side (required fields, formats, length)
+  - Normalize and sanitize data
+- Background processing:
+  - Prepare hooks for asynchronous tasks (e.g., SS0 connection tests, invoice processing)
+
+### Integration
+- Data flow:
+  - Admin UI components perform API calls to internal admin endpoints
+  - Data is normalized to UI models; null-safe rendering using (data ?? []) and Array.isArray checks
+  - Actions trigger new state, optimistic UI updates with rollback on failure
+- Consistency:
+  - Centralized error handling and toast notifications
+  - Shared token/theme system for design consistency
+- Extensibility:
+  - Modules are decoupled; new sections can be added with minimal coupling
+  - SSO config supports future provider adapters
+
+## User Experience Flow
+1. Admin lands on Admin Dashboard; sees overview with health and billing status
+2. Navigate to Tenant Settings to create a new tenant or modify existing tenants
+3. Go to SSO Configuration to connect SAML or OIDC, input metadata, and run a test connection
+4. Open User Management to invite new users, assign roles, and deactivate users as needed
+5. Review System Health metrics and address any alerts
+6. Access Billing to view current subscription, credits, and invoices; download or export invoices
+7. Audit logs (optional) to review admin actions
+8. Take actions with immediate visual feedback via toasts and inline validations
+
+Step-by-step journey:
+- Open Admin Dashboard -> select Tenant Settings -> fill form -> submit -> see success toast; data updates in list
+- Configure SSO -> input data -> Test Connection -> success/wailure feedback
+- Invite user -> specify role -> send invite -> user appears with pending status; can resend or deactivate
+- Check Health -> review metrics and alerts -> acknowledge
+- Review Billing -> view tier, credits, and invoices -> download invoice
+- Optional: view Audit Logs for actions taken
+
+## Technical Specifications
+
+Data Models: (TypeScript-style outlines)
+- Tenant
+  - id: string
+  - name: string
+  - domain: string
+  - createdAt: string
+  - settings: { defaultLocale?: string; quotas?: object; }
+
+- User
+  - id: string
+  - email: string
+  - tenantId: string
+  - isActive: boolean
+  - roles: string[]
+  - invitedAt: string
+
+- Role
+  - id: string
+  - name: string
+  - permissions: string[]
+
+- SSOConfig
+  - id: string
+  - tenantId: string
+  - type: 'SAML' | 'OIDC'
+  - config: { issuer?: string; entryPoint?: string; cert?: string; clientId?: string; clientSecret?: string; metadata?: string }
+  - status: 'configured' | 'invalid' | 'testing'
+
+- HealthMetric
+  - id: string
+  - tenantId: string
+  - metricName: string
+  - value: number
+  - timestamp: string
+
+- Invoice
+  - id: string
+  - tenantId: string
+  - periodStart: string
+  - periodEnd: string
+  - total: number
+  - status: 'paid' | 'unpaid' | 'overdue'
+
+API Endpoints: (Routes and methods)
+- GET /api/admin/tenants
+- POST /api/admin/tenants
+- PUT /api/admin/tenants/{id}
+- GET /api/admin/sso
+- POST /api/admin/sso/test
+- PUT /api/admin/sso/{id}
+- GET /api/admin/users
+- POST /api/admin/users/invite
+- PATCH /api/admin/users/{id}/activate
+- PATCH /api/admin/users/{id}/deactivate
+- GET /api/admin/roles
+- POST /api/admin/roles
+- GET /api/admin/health
+- GET /api/admin/billing
+- GET /api/admin/billing/invoices
+
+Security: Authentication, authorization requirements
+- Enforce admin-level authentication for all endpoints
+- Use RBAC to restrict actions: tenant admins, system admins
+- Audit logging for critical actions: tenant creation, SSO config changes, user invites, role changes, billing updates
+- Encrypted storage for sensitive fields (SSO secrets, certificates)
+- CSRF protection for state-changing endpoints if applicable
+
+Validation: Input validation rules
+- Tenant: name required, domain must be valid URL-like string, unique per tenant
+- SSO: type must be SAML or OIDC; required fields per type; valid endpoints and certificate formats
+- User invite: email must be valid, role must exist, tenantId must match
+- Roles: name required, permissions array must contain valid permission keys
+- Health: numeric metrics validated, timestamps in ISO format
+- Billing: totals must be numbers, status in allowed set
+
+Acceptance Criteria
+- [ ] All data fetching and mutations guard against null/undefined; arrays initialized as [] and accessed with Array.isArray() checks
+- [ ] Admin Dashboard renders without runtime errors; all lists rendered with safe guards
+- [ ] Tenant settings create/update flows validate inputs and reflect changes in UI
+- [ ] SSO configuration allows test connection flow with clear success/failure feedback
+- [ ] User management supports invite, role assignment, activation/deactivation with proper state updates
+- [ ] Health metrics display accurate values with non-blocking UI
+- [ ] Billing view shows tier, credits, and invoices; invoices downloadable
+- [ ] Audit log captures critical admin actions and is accessible (if implemented)
+
+UI/UX Guidelines
+Apply the project's design system:
 ---
-Visual Style (as provided)
+Visual Style
+- Color Palette: as provided
+- Typography & Layout: Inter/Circular/SF Pro; bold headings, medium labels; generous spacing 24–32px
+- Key Design Elements: Card design with rounded corners, subtle shadows; top navigation pill-shaped; side navigation with icons; data visualization hints via cards
+- Interactive Elements: Pill-shaped buttons, outlined/filled variants, focus states, hover micro-interactions
+- Design Philosophy: Modern, minimalist, enterprise-ready with clear feedback and modularity
 
-- Implement the color palette, typography, and layout guidelines.
-- Card Design: 16–24px radius, subtle shadows, hover/active states with accent green highlights.
-- Navigation: Top bar, sidebar with clear active states and pill-shaped active items.
-- Data Visualization: Use summary blocks for metrics; not all charts are required on this page, but space for inline status pills is present.
-- Interactive Elements: Rounded pill buttons, soft form fields, clear focus states, and micro-interactions.
-- Design Philosophy: Modern enterprise feel with strong focus on clarity, actionability, and modularity.
+Accessibility
+- Keyboard navigable UI
+- ARIA attributes where appropriate
+- Clear contrast ratios for text and UI elements
 
-Runtime Safety — Mandatory Coding Standards
-- Supabase query results: Use const items = data ?? [].
-- Array methods guarded:
-  - (items ?? []).map(...)
-  - Array.isArray(items) ? items.map(...) : []
-- useState for arrays: useState<Type[]>([])
-- API response shapes: const list = Array.isArray(response?.data) ? response.data : []
-- Optional chaining: obj?.property?.nested
-- Destructuring with defaults: const { items = [], count = 0 } = response ?? {}
+Performance & Reliability
+- Lazy load heavy components; paginate long lists
+- Debounce/Throttle input handling for search and filters
+- Use skeletons or placeholders while loading data
+- Ensure error boundaries and retry strategies
 
-Project Context Alignment
-- Ensure the Reports & Exports page integrates with the enterprise OfficeInventory AI data model and tenant isolation principles.
-- Exports should reflect inventory lists, condition summaries, utilization insights, and exceptions in consistent schemas suitable for procurement, facilities, and sustainability teams.
-- The UI must support future expansion (2D space planning, move planning, ESG reporting) with a modular, scalable layout.
+Testing
+- Unit tests for data normalization and utility functions
+- Integration tests for end-to-end flows (tenant creation, user invite, SSO test)
+- UI tests for core paths (dashboard render, panel navigation)
 
-Complete, actionable prompt for AI development tool
-- Use this specification to generate:
-  - Frontend React components (TypeScript) with strong null safety, types, and form handling.
-  - Backend API stubs (TypeScript/Node.js or your stack) with data models, validation, and RBAC hooks.
-  - Data access layer that adheres to the runtime safety rules (data ?? [] patterns, Array.isArray guards).
-  - Tests: unit and integration tests covering export build, template CRUD, schedule CRUD, and history retrieval with null-safe paths.
-  - Documentation: API contracts, field definitions, and usage examples.
-- Ensure all code adheres to the Runtime Safety rules above and aligns with the specified visual design system and UX flows.
+Fulfillment Notes
+- When implementing, ensure all data paths are null-safe:
+  - const tenants = Array.isArray(data?.tenants) ? data.tenants : []
+  - const items = (data ?? []) // if API returns an array
+  - Use data ?? [] in all Supabase-like fetch results
+- Initialize all useState with explicit types:
+  - const [tenants, setTenants] = useState<Tenant[]>([])
+  - const [users, setUsers] = useState<User[]>([])
+  - const [roles, setRoles] = useState<Role[]>([])
+- Guard array operations:
+  - (tenants ?? []).map(...)
+  - Array.isArray(users) ? users.map(...) : []
+- Validate API shapes:
+  - const list = Array.isArray(response?.data) ? response.data : []
+  - const { count = 0 } = response ?? {}
+- Use optional chaining for nested objects:
+  - const email = user?.email
+- Destructure with defaults:
+  - const { items = [], count = 0 } = response ?? {}
+
+This prompt provides a thorough, actionable blueprint for AI development tools to implement a robust Admin Dashboard with a strong emphasis on runtime safety, data integrity, modular architecture, and a polished user experience aligned with the given design system.
 
 ## Implementation Notes
 
