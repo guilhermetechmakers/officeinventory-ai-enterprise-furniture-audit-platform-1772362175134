@@ -327,58 +327,75 @@ All dashboard pages should be nested inside the dashboard layout, not separate r
 ## User Design Requirements
 
 ---
-## Visual Style
+Visual Style
 
-### Color Palette
-- Primary background: Soft light gray (#F5F6F8)
-- Card background: Slightly darker gray (#E8E9EC)
-- Accent: Vibrant lime green (#C9FF52)
-- Surfaces: Pure white (#FFFFFF)
-- Navigation/ Panels: Deep black (#18191A)
-- Dividers/Muted text: Mid-gray (#B6B7BA)
-- Text: Primary dark gray (#232323); secondary text #6B6B6B; white on dark backgrounds
-- Status/Alerts: Red (#FF5E5E) for errors, Orange (#FFC85E) for warnings, Sky blue (#6ECFFF) for secondary tags
+Color Palette:
+- Primary background: Soft light gray (#F5F6F8) for main workspace, with slightly darker gray (#E8E9EC) for card backgrounds
+- Accent color: Vibrant lime green (#C9FF52) for highlighting key actions, events, and active states
+- Secondary colors: Pure white (#FFFFFF) for card and modal surfaces, deep black (#18191A) for navigation and summary panels, and mid-gray (#B6B7BA) for dividers and muted text
+- Text: Dark gray (#232323) for primary text, lighter gray (#6B6B6B) for secondary text, and white (#FFFFFF) on dark backgrounds
+- Additional accents: Red (#FF5E5E) for warning or error states, orange (#FFC85E) and sky blue (#6ECFFF) for secondary status and tags
+- Color relationships: High contrast between accent green and muted neutrals for clear focus; black panels create visual anchor points
 
-### Typography & Layout
-- Font family: Inter, SF Pro, or Circular (geometric sans-serif)
-- Font weights: Regular (body), Bold (heading), Medium (labels/CTAs)
-- Hierarchy: Large bold headings, medium subheads, light metadata
-- Spacing: Generous padding/margins between cards and sections (24–32px)
-- Alignment: Left-aligned text; center-aligned key metrics; edge-to-edge card layouts
-- Treatments: Color and weight for emphasis; iconography with text
+Typography & Layout:
+- Font family: Clean, geometric sans-serif (e.g., Inter, SF Pro, or Circular)
+- Font weights: Regular for body, bold for headings, medium for labels and CTAs
+- Hierarchy: Large, bold headings; medium-weight subheads; lighter secondary labels and metadata
+- Spacing: Generous padding and margin between cards and sections (24–32px), with consistent vertical rhythm
+- Alignment: Left-aligned text, center-aligned key metrics, and edge-to-edge card layouts
+- Treatments: Subtle use of color and weight for emphasis; iconography paired with text for clarity
 
-### Key Design Elements
+Key Design Elements
 
-#### Card Design
-- Rounded corners: 16–24px
-- Elevation: Mild drop shadows
-- Hover/Active: Subtle shadow or outline; accent green highlight for selections
-- Visual hierarchy: Prominent title, metadata, compact icons/tags at bottom
+Card Design:
+- Card styling: Rounded corners (16–24px radius), mild drop shadows for elevation, white or very light gray backgrounds
+- Borders: Minimal or none, relying on shadow and spacing for separation
+- Hover/active: Subtle shadow intensification or light outline; accent green highlight for selected cards
+- Visual hierarchy: Prominent title, secondary metadata, compact icons and tags at the bottom
 
-#### Navigation
-- Top bar: Pill-shaped, black with white and accent green highlights
-- Sidebar: Minimal vertical icon stack with subtle dividers
-- Active states: Green or white on black; pill backgrounds for current section
-- Expandability: Design supports modular expansion
+Navigation:
+- Top bar: Pill-shaped, black with white and accent green highlights for active items
+- Sidebar: Minimal vertical icon stack, outlined with subtle dividers
+- Active states: High-contrast color (green or white on black) and pill backgrounds for current section
+- Collapsible/expandable: Not explicitly shown, but navigation elements are designed to support modular expansion
 
-#### Data Visualization
-- Not primary; use card-style stat blocks for summary; inline status pills for quick-glance metrics
+Data Visualization:
+- Chart styles: Not directly visible, but summary panels hint at card-style stat blocks with bold numerals and compact labels
+- Visual treatments: Use of accent colors for status, white/black backgrounds for strong separation
+- Patterns: Inline mini-charts or status pills likely for quick-glance metrics
 
-#### Interactive Elements
-- Buttons: Rounded pill-shaped; filled with accent green or black, or outlined
-- Forms: Soft rounded fields with subtle shadows/outlines; clear focus states
-- Hover effects: Subtle shadows, transitions, micro-interactions
+Interactive Elements:
+- Button styles: Rounded pill-shaped buttons, filled (accent green or black) or outlined, minimal iconography
+- Form elements: Soft, rounded fields with subtle shadows or outlines, clear focus states
+- Hover effects: Mild shadow intensification, color fill transitions, and micro-interactions (icon movement/scale)
+- Micro-interactions: Subtle, reinforcing clarity and responsiveness
 
-### Design Philosophy
-- Modern, minimalist, enterprise-grade aesthetic
-- Simplicity, whitespace, clear hierarchy to reduce cognitive load
-- Rounded shapes, high-contrast accents to guide attention
-- Frictionless navigation, quick scanning, decisive actions with clear feedback
-- Modular, scalable for future workflows
+Design Philosophy
+This interface embodies:
+- A modern, minimalist, and professional aesthetic with high clarity and focus on actionable elements
+- Design principles of simplicity, whitespace, and visual hierarchy to reduce cognitive load and drive efficiency
+- Rounded, approachable shapes and high-contrast accenting to guide user attention
+- User experience goals centered on frictionless navigation, quick scanning, and confident action-taking with clear status and feedback
+- Visual strategy prioritizing enterprise trust, approachability, and clear modularity for scalable workflows
 
 ---
 
-Generate the complete, detailed prompt now:
+Mandatory Coding Standards — Runtime Safety
+
+CRITICAL: Follow these rules in ALL generated code to prevent runtime crashes.
+
+1. Supabase query results: Always use nullish coalescing — const items = data ?? []. Supabase returns null (not []) when there are no rows.
+2. Array methods (.map(), .filter(), .reduce(), .forEach(), .find(), .some(), .every()): Never call on a value that could be null, undefined, or a non-array. Always guard:
+   - (items ?? []).map(...) or
+   - Array.isArray(items) ? items.map(...) : []
+3. React useState for arrays/objects: Always initialize with the correct type — useState<Type[]>([]) (e.g., useState<Group[]>([])), never useState() or useState(null) for arrays.
+4. API response shapes: Always validate — const list = Array.isArray(response?.data) ? response.data : [].
+5. Optional chaining: Use obj?.property?.nested when accessing nested objects from API responses or database queries.
+6. Destructuring with defaults: const { items = [], count = 0 } = response ?? {}.
+
+---
+
+This prompt provides a complete, actionable specification for building the Merge & Duplicate Resolution feature with explicit runtime safety rules, UI/UX design guidance, data models, and integration points suitable for an AI development tool to implement the feature end-to-end.
 
 ## Implementation Notes
 

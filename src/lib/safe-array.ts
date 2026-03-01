@@ -31,3 +31,19 @@ export function ensureArray<T>(value: T[] | null | undefined): T[] {
 
 /** Alias for ensureArray - use ensureArray for consistency */
 export const toSafeArray = ensureArray
+
+/**
+ * SafeArrayUtils - guard against non-arrays
+ * Use ensureArray(input) -> Array for runtime safety
+ */
+export const SafeArrayUtils = {
+  ensureArray,
+  safeMap: <T, U>(
+    items: T[] | null | undefined,
+    fn: (item: T, index: number) => U
+  ): U[] => (Array.isArray(items) ? items.map(fn) : []),
+  safeFilter: <T>(
+    items: T[] | null | undefined,
+    predicate: (item: T, index: number) => boolean
+  ): T[] => (Array.isArray(items) ? items.filter(predicate) : []),
+}
