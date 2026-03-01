@@ -17,6 +17,7 @@ import { GuideDetailPage } from '@/pages/help/guide-detail-page'
 import { DocDetailPage } from '@/pages/help/doc-detail-page'
 import { LegalPage } from '@/pages/legal'
 import { PrivacyPolicyPageRoute } from '@/pages/privacy-policy'
+import { TermsOfServicePageRoute } from '@/pages/terms-of-service'
 import { NotFoundPage } from '@/pages/not-found'
 import { DashboardOverview } from '@/pages/dashboard/overview'
 import { CapturePage } from '@/pages/dashboard/capture'
@@ -112,7 +113,7 @@ export const router = createBrowserRouter([
   },
   {
     path: '/terms',
-    element: <LegalPage title="Terms of Service" content="Terms of service content. Update with your actual terms." />,
+    element: <TermsOfServicePageRoute />,
   },
   { path: '/404', element: <NotFoundPage /> },
   { path: '*', element: <Navigate to="/404" replace /> },
