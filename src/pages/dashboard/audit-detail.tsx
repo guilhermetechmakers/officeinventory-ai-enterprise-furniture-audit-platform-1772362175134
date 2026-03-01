@@ -178,6 +178,7 @@ export function AuditDetailPage() {
           <DetectionsPanel
             items={effectiveItems}
             filters={filters}
+            auditId={auditId ?? audit?.id}
             onConfirm={handleItemConfirm}
             onFlag={handleItemFlag}
             onMerge={handleItemMerge}

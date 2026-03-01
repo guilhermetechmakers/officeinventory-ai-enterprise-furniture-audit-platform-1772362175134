@@ -12,6 +12,7 @@ import { DetectedItemCard } from './detected-item-card'
 export interface DetectionsPanelProps {
   items: DetectedItem[]
   filters: AuditDetailFilters
+  auditId?: string
   onConfirm?: (id: string) => void
   onFlag?: (id: string) => void
   onMerge?: (id: string) => void
@@ -75,6 +76,7 @@ function applyFiltersAndSort(
 export function DetectionsPanel({
   items,
   filters,
+  auditId,
   onConfirm,
   onFlag,
   onMerge,
@@ -118,6 +120,7 @@ export function DetectionsPanel({
         <DetectedItemCard
           key={item?.id ?? ''}
           item={item}
+          auditId={auditId}
           onConfirm={onConfirm}
           onFlag={onFlag}
           onMerge={onMerge}

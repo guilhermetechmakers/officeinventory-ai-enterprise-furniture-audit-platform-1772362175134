@@ -3,12 +3,14 @@
  */
 
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import {
   Check,
   Flag,
   Merge,
   ImageIcon,
   ImageOff,
+  ChevronRight,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -52,6 +54,7 @@ function formatItemStatus(status: string | null | undefined): string {
 
 export interface DetectedItemCardProps {
   item: DetectedItem
+  auditId?: string
   onConfirm?: (id: string) => void
   onFlag?: (id: string) => void
   onMerge?: (id: string) => void
@@ -60,6 +63,7 @@ export interface DetectedItemCardProps {
 
 export function DetectedItemCard({
   item,
+  auditId,
   onConfirm,
   onFlag,
   onMerge,
@@ -113,7 +117,17 @@ export function DetectedItemCard({
 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="font-semibold text-foreground">{category}</h3>
+            {auditId && item?.id ? (
+              <Link
+                to={`/dashboard/audits/${auditId}/items/${item.id}`}
+                className="font-semibold text-foreground hover:text-primary hover:underline flex items-center gap-1"
+              >
+                {category}
+                <ChevronRight className="h-4 w-4" />
+              </Link>
+            ) : (
+              <h3 className="font-semibold text-foreground">{category}</h3>
+            )}
             <Badge variant={getStatusVariant(item?.status ?? '')}>
               {formatItemStatus(item?.status)}
             </Badge>
