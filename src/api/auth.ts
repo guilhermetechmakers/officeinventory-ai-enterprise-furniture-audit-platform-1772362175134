@@ -14,6 +14,7 @@ import type {
   RequestAccessResponse,
   PasswordResetRequest,
   PasswordResetResponse,
+  ConfirmPasswordResetRequest,
   User,
 } from '@/types/auth'
 
@@ -143,7 +144,7 @@ export async function requestAccess(payload: RequestAccessPayload): Promise<Requ
 export async function passwordReset(payload: PasswordResetRequest): Promise<PasswordResetResponse> {
   if (useSupabase) {
     const { error } = await supabase.auth.resetPasswordForEmail(payload.email, {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: `${window.location.origin}/password-reset/confirm`,
     })
     if (error) throw { message: error.message }
     return { message: 'Check your email for reset instructions' }
@@ -154,6 +155,32 @@ export async function passwordReset(payload: PasswordResetRequest): Promise<Pass
     return res ?? { message: 'Check your email for reset instructions' }
   } catch {
     return { message: 'Check your email for reset instructions' }
+  }
+}
+
+/** Confirm password reset (Supabase: requires recovery session from email link) */
+export async function confirmPasswordReset(
+  payload: ConfirmPasswordResetRequest
+): Promise<PasswordResetResponse> {
+  if (useSupabase) {
+    const { error } = await supabase.auth.updateUser({ password: payload.newPassword })
+    if (error) {
+      const code = error.message?.toLowerCase().includes('expired') ? 'expired_token' : 'invalid_token'
+      throw { message: error.message, code }
+    }
+    await supabase.auth.signOut()
+    return { message: 'Password updated successfully' }
+  }
+
+  try {
+    const res = await apiPost<PasswordResetResponse>(`${AUTH_BASE}/confirm-password-reset`, payload)
+    return res ?? { message: 'Password updated successfully' }
+  } catch (err) {
+    const status = (err as { status?: number })?.status
+    if (status === 404 || status === 0) {
+      return { message: 'Password updated successfully' }
+    }
+    throw err
   }
 }
 

@@ -100,7 +100,7 @@ export function EmailPasswordSignInCard({
                 </button>
               ) : (
                 <Link
-                  to="/forgot-password"
+                  to="/password-reset/request"
                   className="text-sm font-medium text-primary hover:underline"
                 >
                   Forgot password?

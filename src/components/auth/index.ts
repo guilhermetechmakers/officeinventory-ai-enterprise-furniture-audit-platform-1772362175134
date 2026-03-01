@@ -5,3 +5,11 @@ export { RequestAccessCard } from './request-access-card'
 export { PasswordResetModal } from './password-reset-modal'
 export { HelpSupportCTA } from './help-support-cta'
 export { RedirectHandler } from './redirect-handler'
+export {
+  PasswordStrengthMeter,
+  getPasswordStrength,
+  NewPasswordForm,
+  RequestResetForm,
+  ResetTokenValidationView,
+  RedirectToLoginCTA,
+} from './password-reset'

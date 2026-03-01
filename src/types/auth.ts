@@ -99,6 +99,33 @@ export interface PasswordResetResponse {
   message: string
 }
 
+export interface ConfirmPasswordResetRequest {
+  token?: string
+  newPassword: string
+}
+
+export interface ConfirmPasswordResetResponse {
+  success: boolean
+  message?: string
+}
+
+export interface ValidateResetTokenResponse {
+  valid: boolean
+  expiresAt?: string
+  reason?: string
+}
+
+export interface ConfirmPasswordResetRequest {
+  token?: string
+  newPassword: string
+}
+
+export interface ValidateResetTokenResponse {
+  valid: boolean
+  expiresAt?: string
+  reason?: string
+}
+
 /** Email verification status for intermediary verification page */
 export type VerificationStatus = 'pending' | 'verified' | 'failed'
 

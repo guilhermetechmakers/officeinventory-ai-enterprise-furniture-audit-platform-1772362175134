@@ -33,6 +33,25 @@ export const forgotPasswordSchema = z.object({
   email: emailSchema,
 })
 
+/** Enterprise-grade password schema for reset (12+ chars, all character classes) */
+export const newPasswordSchema = z
+  .string()
+  .min(12, 'Password must be at least 12 characters')
+  .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+  .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+  .regex(/[0-9]/, 'Password must contain at least one number')
+  .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character')
+
+export const confirmPasswordResetSchema = z
+  .object({
+    password: newPasswordSchema,
+    confirmPassword: z.string().min(1, 'Please confirm your password'),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  })
+
 export const requestAccessSchema = z.object({
   organizationName: z.string().min(2, 'Organization name is required'),
   contactEmail: emailSchema,
@@ -42,4 +61,5 @@ export const requestAccessSchema = z.object({
 export type LoginFormValues = z.infer<typeof loginSchema>
 export type SignupFormValues = z.infer<typeof signupSchema>
 export type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>
+export type ConfirmPasswordResetFormValues = z.infer<typeof confirmPasswordResetSchema>
 export type RequestAccessFormValues = z.infer<typeof requestAccessSchema>

@@ -12,6 +12,10 @@ const ERROR_MAP: Record<string, string> = {
   RATE_LIMITED: 'Too many attempts. Please try again later.',
   NETWORK_ERROR: 'Network error. Please check your connection and try again.',
   UNKNOWN: 'An unexpected error occurred. Please try again.',
+  EXPIRED_LINK: 'This reset link has expired. Please request a new password reset.',
+  INVALID_LINK: 'This reset link is invalid. Please request a new password reset.',
+  invalid_token: 'This reset link is invalid or has already been used. Please request a new one.',
+  expired_token: 'This reset link has expired. Please request a new password reset.',
 }
 
 export function mapAuthError(error: unknown): string {
@@ -32,6 +36,9 @@ export function mapAuthError(error: unknown): string {
     return ERROR_MAP.SSO_MISCONFIGURED
   if (lowerMessage.includes('network') || lowerMessage.includes('fetch')) return ERROR_MAP.NETWORK_ERROR
   if (lowerMessage.includes('rate') || lowerMessage.includes('too many')) return ERROR_MAP.RATE_LIMITED
+  if (lowerMessage.includes('expired')) return ERROR_MAP.EXPIRED_LINK
+  if (lowerMessage.includes('invalid') && (lowerMessage.includes('token') || lowerMessage.includes('link')))
+    return ERROR_MAP.INVALID_LINK
 
   return message || ERROR_MAP.UNKNOWN
 }

@@ -4,7 +4,11 @@ import { AuthLayout } from '@/components/layout/auth-layout'
 import { LandingPage } from '@/pages/landing'
 import { LoginPage } from '@/pages/login'
 import { SignupPage } from '@/pages/signup'
-import { ForgotPasswordPage } from '@/pages/forgot-password'
+import {
+  PasswordResetLayout,
+  PasswordResetRequestPage,
+  PasswordResetConfirmPage,
+} from '@/pages/password-reset'
 import { EmailVerificationPageRoute } from '@/pages/email-verification'
 import { ContactPage } from '@/pages/contact'
 import { HelpPage } from '@/pages/help'
@@ -30,7 +34,16 @@ export const router = createBrowserRouter([
     children: [
       { path: 'login', element: <LoginPage /> },
       { path: 'signup', element: <SignupPage /> },
-      { path: 'forgot-password', element: <ForgotPasswordPage /> },
+      { path: 'forgot-password', element: <Navigate to="/password-reset/request" replace /> },
+      {
+        path: 'password-reset',
+        element: <PasswordResetLayout />,
+        children: [
+          { index: true, element: <Navigate to="request" replace /> },
+          { path: 'request', element: <PasswordResetRequestPage /> },
+          { path: 'confirm', element: <PasswordResetConfirmPage /> },
+        ],
+      },
       { path: 'verify-email', element: <EmailVerificationPageRoute /> },
     ],
   },
