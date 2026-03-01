@@ -25,6 +25,7 @@ import { AnalyticsPage } from '@/pages/dashboard/analytics'
 import { AdminPage } from '@/pages/dashboard/admin'
 import { SettingsPage } from '@/pages/dashboard/settings'
 import { UsersPage } from '@/pages/dashboard/users'
+import { SitesPage } from '@/pages/dashboard/sites'
 
 export const router = createBrowserRouter([
   { path: '/', element: <LandingPage /> },
@@ -62,6 +63,8 @@ export const router = createBrowserRouter([
       { path: 'admin', element: <AdminPage /> },
       { path: 'settings', element: <SettingsPage /> },
       { path: 'users', element: <UsersPage /> },
+      { path: 'sites', element: <SitesPage /> },
+      { path: 'sites/:id', element: <SitesPage /> },
     ],
   },
   { path: '/contact', element: <ContactPage /> },

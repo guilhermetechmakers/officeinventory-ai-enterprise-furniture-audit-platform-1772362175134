@@ -13,6 +13,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Upload,
+  MapPin,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -23,6 +24,7 @@ const navItems = [
   { to: '/dashboard/capture', icon: Camera, label: 'Capture' },
   { to: '/dashboard/uploads', icon: Upload, label: 'Upload Status' },
   { to: '/dashboard/audits', icon: ClipboardList, label: 'Audits' },
+  { to: '/dashboard/sites', icon: MapPin, label: 'Sites' },
   { to: '/dashboard/review-queue', icon: CheckSquare, label: 'Review Queue' },
   { to: '/dashboard/merge', icon: Merge, label: 'Merge & Duplicates' },
   { to: '/dashboard/reports', icon: FileText, label: 'Reports' },

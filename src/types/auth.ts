@@ -6,6 +6,7 @@ export interface User {
   name?: string
   roles: string[]
   orgs?: string[]
+  avatarUrl?: string
 }
 
 export interface Invitation {

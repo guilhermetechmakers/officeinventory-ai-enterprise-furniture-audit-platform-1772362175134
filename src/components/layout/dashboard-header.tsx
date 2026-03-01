@@ -1,9 +1,7 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Search, Bell, ChevronDown, User, LogOut } from 'lucide-react'
+import { Search, Bell, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,16 +10,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { AvatarMenu } from '@/components/dashboard'
+
 interface DashboardHeaderProps {
   onSearch?: (query: string) => void
   tenantName?: string
-  user?: { name?: string; email?: string; avatar?: string }
 }
 
 export function DashboardHeader({
   onSearch,
   tenantName = 'Acme Corp',
-  user = { name: 'User', email: 'user@example.com' },
 }: DashboardHeaderProps) {
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -29,13 +27,6 @@ export function DashboardHeader({
     e.preventDefault()
     onSearch?.(searchQuery)
   }
-
-  const initials = user.name
-    ?.split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2) ?? 'U'
 
   return (
     <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b border-border bg-card px-6 shadow-sm">
@@ -71,40 +62,7 @@ export function DashboardHeader({
           <span className="sr-only">Notifications</span>
         </Button>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-              <Avatar className="h-10 w-10">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="bg-primary text-primary-foreground">
-                  {initials}
-                </AvatarFallback>
-              </Avatar>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>
-              <div className="flex flex-col">
-                <span>{user.name}</span>
-                <span className="text-xs font-normal text-muted-foreground">
-                  {user.email}
-                </span>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link to="/dashboard/settings">
-                <User className="mr-2 h-4 w-4" />
-                Profile & Settings
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive">
-              <LogOut className="mr-2 h-4 w-4" />
-              Sign out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <AvatarMenu />
       </div>
     </header>
   )
