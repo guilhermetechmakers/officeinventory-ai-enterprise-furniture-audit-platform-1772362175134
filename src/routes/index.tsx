@@ -16,6 +16,7 @@ import { DocumentationCenterPage } from '@/pages/help/documentation-center-page'
 import { GuideDetailPage } from '@/pages/help/guide-detail-page'
 import { DocDetailPage } from '@/pages/help/doc-detail-page'
 import { LegalPage } from '@/pages/legal'
+import { PrivacyPolicyPageRoute } from '@/pages/privacy-policy'
 import { NotFoundPage } from '@/pages/not-found'
 import { DashboardOverview } from '@/pages/dashboard/overview'
 import { CapturePage } from '@/pages/dashboard/capture'
@@ -93,8 +94,21 @@ export const router = createBrowserRouter([
     ],
   },
   {
+    path: '/privacy-policy',
+    element: <PrivacyPolicyPageRoute />,
+  },
+  {
     path: '/privacy',
-    element: <LegalPage title="Privacy Policy" content="Privacy policy content. Update with your actual privacy policy text." />,
+    element: <Navigate to="/privacy-policy" replace />,
+  },
+  {
+    path: '/dpa',
+    element: (
+      <LegalPage
+        title="Data Processing Addendum (DPA)"
+        content="This Data Processing Addendum supplements the Privacy Policy and Terms of Service for enterprise customers. It defines the roles and responsibilities for processing personal data when using OfficeInventory AI services. Contact your account manager or legal@officeinventory.ai for a signed DPA."
+      />
+    ),
   },
   {
     path: '/terms',

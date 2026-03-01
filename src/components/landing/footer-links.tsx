@@ -3,7 +3,7 @@ import { Github, Twitter, Linkedin } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const footerLinks = [
-  { href: '/privacy', label: 'Privacy Policy' },
+  { href: '/privacy-policy', label: 'Privacy Policy' },
   { href: '/terms', label: 'Terms of Service' },
   { href: '/contact', label: 'Contact' },
   { href: '/help', label: 'Documentation' },
