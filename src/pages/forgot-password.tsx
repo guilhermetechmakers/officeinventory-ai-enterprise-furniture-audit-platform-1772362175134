@@ -2,19 +2,21 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { passwordReset } from '@/api/auth'
+import { forgotPasswordSchema, type ForgotPasswordFormValues } from '@/lib/auth-validators'
+import { mapAuthError } from '@/lib/auth-error-mapper'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
-
-const forgotSchema = z.object({
-  email: z.string().email('Invalid email address'),
-})
-
-type ForgotForm = z.infer<typeof forgotSchema>
 
 export function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -24,20 +26,19 @@ export function ForgotPasswordPage() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ForgotForm>({
-    resolver: zodResolver(forgotSchema),
+  } = useForm<ForgotPasswordFormValues>({
+    resolver: zodResolver(forgotPasswordSchema),
     defaultValues: { email: '' },
   })
 
-  const onSubmit = async (_data: ForgotForm) => {
+  const onSubmit = async (data: ForgotPasswordFormValues) => {
     setIsLoading(true)
     try {
-      // TODO: Integrate with Supabase Auth password reset
-      await new Promise((r) => setTimeout(r, 800))
+      await passwordReset({ email: data.email })
       setSubmitted(true)
       toast.success('Check your email for reset instructions')
-    } catch {
-      toast.error('Failed to send reset email')
+    } catch (err) {
+      toast.error(mapAuthError(err))
     } finally {
       setIsLoading(false)
     }
@@ -45,14 +46,16 @@ export function ForgotPasswordPage() {
 
   if (submitted) {
     return (
-      <div className="w-full space-y-6">
+      <div className="w-full space-y-6 animate-fade-in">
         <div className="space-y-2 text-center lg:text-left">
-          <h1 className="text-2xl font-bold">Check your email</h1>
+          <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">
+            Check your email
+          </h1>
           <p className="text-muted-foreground">
             We&apos;ve sent password reset instructions to your email address.
           </p>
         </div>
-        <Card>
+        <Card className="rounded-2xl border border-border bg-card shadow-card">
           <CardContent className="pt-6">
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
@@ -78,15 +81,17 @@ export function ForgotPasswordPage() {
   }
 
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full space-y-6 animate-fade-in">
       <div className="space-y-2 text-center lg:text-left">
-        <h1 className="text-2xl font-bold">Forgot password?</h1>
+        <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">
+          Forgot password?
+        </h1>
         <p className="text-muted-foreground">
           Enter your email and we&apos;ll send you reset instructions
         </p>
       </div>
 
-      <Card>
+      <Card className="rounded-2xl border border-border bg-card shadow-card transition-all duration-300 hover:shadow-elevated">
         <CardHeader className="space-y-1">
           <CardTitle>Reset password</CardTitle>
           <CardDescription>
@@ -101,11 +106,14 @@ export function ForgotPasswordPage() {
                 id="email"
                 type="email"
                 placeholder="you@company.com"
+                aria-invalid={!!errors.email}
                 {...register('email')}
                 className={cn(errors.email && 'border-destructive')}
               />
               {errors.email && (
-                <p className="text-sm text-destructive">{errors.email.message}</p>
+                <p className="text-sm text-destructive" role="alert">
+                  {errors.email.message}
+                </p>
               )}
             </div>
             <Button type="submit" className="w-full rounded-full" disabled={isLoading}>
