@@ -187,3 +187,4 @@ export async function fetchSiteDetail(siteId: string): Promise<SiteDetail | null
     return null
   }
 }
+
