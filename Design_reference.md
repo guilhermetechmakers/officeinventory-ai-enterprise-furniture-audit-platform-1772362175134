@@ -327,75 +327,38 @@ All dashboard pages should be nested inside the dashboard layout, not separate r
 ## User Design Requirements
 
 ---
-Visual Style
+Visual Style (as provided)
 
-Color Palette:
-- Primary background: Soft light gray (#F5F6F8) for main workspace, with slightly darker gray (#E8E9EC) for card backgrounds
-- Accent color: Vibrant lime green (#C9FF52) for highlighting key actions, events, and active states
-- Secondary colors: Pure white (#FFFFFF) for card and modal surfaces, deep black (#18191A) for navigation and summary panels, and mid-gray (#B6B7BA) for dividers and muted text
-- Text: Dark gray (#232323) for primary text, lighter gray (#6B6B6B) for secondary text, and white (#FFFFFF) on dark backgrounds
-- Additional accents: Red (#FF5E5E) for warning or error states, orange (#FFC85E) and sky blue (#6ECFFF) for secondary status and tags
-- Color relationships: High contrast between accent green and muted neutrals for clear focus; black panels create visual anchor points
+- Implement the color palette, typography, and layout guidelines.
+- Card Design: 16–24px radius, subtle shadows, hover/active states with accent green highlights.
+- Navigation: Top bar, sidebar with clear active states and pill-shaped active items.
+- Data Visualization: Use summary blocks for metrics; not all charts are required on this page, but space for inline status pills is present.
+- Interactive Elements: Rounded pill buttons, soft form fields, clear focus states, and micro-interactions.
+- Design Philosophy: Modern enterprise feel with strong focus on clarity, actionability, and modularity.
 
-Typography & Layout:
-- Font family: Clean, geometric sans-serif (e.g., Inter, SF Pro, or Circular)
-- Font weights: Regular for body, bold for headings, medium for labels and CTAs
-- Hierarchy: Large, bold headings; medium-weight subheads; lighter secondary labels and metadata
-- Spacing: Generous padding and margin between cards and sections (24–32px), with consistent vertical rhythm
-- Alignment: Left-aligned text, center-aligned key metrics, and edge-to-edge card layouts
-- Treatments: Subtle use of color and weight for emphasis; iconography paired with text for clarity
+Runtime Safety — Mandatory Coding Standards
+- Supabase query results: Use const items = data ?? [].
+- Array methods guarded:
+  - (items ?? []).map(...)
+  - Array.isArray(items) ? items.map(...) : []
+- useState for arrays: useState<Type[]>([])
+- API response shapes: const list = Array.isArray(response?.data) ? response.data : []
+- Optional chaining: obj?.property?.nested
+- Destructuring with defaults: const { items = [], count = 0 } = response ?? {}
 
-Key Design Elements
+Project Context Alignment
+- Ensure the Reports & Exports page integrates with the enterprise OfficeInventory AI data model and tenant isolation principles.
+- Exports should reflect inventory lists, condition summaries, utilization insights, and exceptions in consistent schemas suitable for procurement, facilities, and sustainability teams.
+- The UI must support future expansion (2D space planning, move planning, ESG reporting) with a modular, scalable layout.
 
-Card Design:
-- Card styling: Rounded corners (16–24px radius), mild drop shadows for elevation, white or very light gray backgrounds
-- Borders: Minimal or none, relying on shadow and spacing for separation
-- Hover/active: Subtle shadow intensification or light outline; accent green highlight for selected cards
-- Visual hierarchy: Prominent title, secondary metadata, compact icons and tags at the bottom
-
-Navigation:
-- Top bar: Pill-shaped, black with white and accent green highlights for active items
-- Sidebar: Minimal vertical icon stack, outlined with subtle dividers
-- Active states: High-contrast color (green or white on black) and pill backgrounds for current section
-- Collapsible/expandable: Not explicitly shown, but navigation elements are designed to support modular expansion
-
-Data Visualization:
-- Chart styles: Not directly visible, but summary panels hint at card-style stat blocks with bold numerals and compact labels
-- Visual treatments: Use of accent colors for status, white/black backgrounds for strong separation
-- Patterns: Inline mini-charts or status pills likely for quick-glance metrics
-
-Interactive Elements:
-- Button styles: Rounded pill-shaped buttons, filled (accent green or black) or outlined, minimal iconography
-- Form elements: Soft, rounded fields with subtle shadows or outlines, clear focus states
-- Hover effects: Mild shadow intensification, color fill transitions, and micro-interactions (icon movement/scale)
-- Micro-interactions: Subtle, reinforcing clarity and responsiveness
-
-Design Philosophy
-This interface embodies:
-- A modern, minimalist, and professional aesthetic with high clarity and focus on actionable elements
-- Design principles of simplicity, whitespace, and visual hierarchy to reduce cognitive load and drive efficiency
-- Rounded, approachable shapes and high-contrast accenting to guide user attention
-- User experience goals centered on frictionless navigation, quick scanning, and confident action-taking with clear status and feedback
-- Visual strategy prioritizing enterprise trust, approachability, and clear modularity for scalable workflows
-
----
-
-Mandatory Coding Standards — Runtime Safety
-
-CRITICAL: Follow these rules in ALL generated code to prevent runtime crashes.
-
-1. Supabase query results: Always use nullish coalescing — const items = data ?? []. Supabase returns null (not []) when there are no rows.
-2. Array methods (.map(), .filter(), .reduce(), .forEach(), .find(), .some(), .every()): Never call on a value that could be null, undefined, or a non-array. Always guard:
-   - (items ?? []).map(...) or
-   - Array.isArray(items) ? items.map(...) : []
-3. React useState for arrays/objects: Always initialize with the correct type — useState<Type[]>([]) (e.g., useState<Group[]>([])), never useState() or useState(null) for arrays.
-4. API response shapes: Always validate — const list = Array.isArray(response?.data) ? response.data : [].
-5. Optional chaining: Use obj?.property?.nested when accessing nested objects from API responses or database queries.
-6. Destructuring with defaults: const { items = [], count = 0 } = response ?? {}.
-
----
-
-This prompt provides a complete, actionable specification for building the Merge & Duplicate Resolution feature with explicit runtime safety rules, UI/UX design guidance, data models, and integration points suitable for an AI development tool to implement the feature end-to-end.
+Complete, actionable prompt for AI development tool
+- Use this specification to generate:
+  - Frontend React components (TypeScript) with strong null safety, types, and form handling.
+  - Backend API stubs (TypeScript/Node.js or your stack) with data models, validation, and RBAC hooks.
+  - Data access layer that adheres to the runtime safety rules (data ?? [] patterns, Array.isArray guards).
+  - Tests: unit and integration tests covering export build, template CRUD, schedule CRUD, and history retrieval with null-safe paths.
+  - Documentation: API contracts, field definitions, and usage examples.
+- Ensure all code adheres to the Runtime Safety rules above and aligns with the specified visual design system and UX flows.
 
 ## Implementation Notes
 

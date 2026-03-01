@@ -1,0 +1,177 @@
+/**
+ * Reports & Exports - Mock data for development and API fallback
+ */
+
+import type {
+  ExportTemplate,
+  Schedule,
+  ExportJob,
+  FieldDefinition,
+  ExportConfig,
+} from '@/types/reports-exports'
+
+export const mockFieldDefinitions: FieldDefinition[] = [
+  { key: 'itemId', label: 'Item ID', type: 'string', isRequired: true, isSortable: true },
+  { key: 'name', label: 'Item Name', type: 'string', isRequired: false, isSortable: true },
+  { key: 'category', label: 'Category', type: 'string', isRequired: false, isSortable: true },
+  { key: 'brand', label: 'Brand', type: 'string', isRequired: false, isSortable: true },
+  { key: 'condition', label: 'Condition', type: 'string', isRequired: false, isSortable: true },
+  { key: 'location', label: 'Location', type: 'string', isRequired: false, isSortable: true },
+  { key: 'site', label: 'Site', type: 'string', isRequired: false, isSortable: true },
+  { key: 'floor', label: 'Floor', type: 'string', isRequired: false, isSortable: true },
+  { key: 'auditDate', label: 'Audit Date', type: 'date', isRequired: false, isSortable: true },
+  { key: 'confidence', label: 'Confidence', type: 'number', isRequired: false, isSortable: true },
+  { key: 'status', label: 'Status', type: 'string', isRequired: false, isSortable: true },
+  { key: 'notes', label: 'Notes', type: 'string', isRequired: false, isSortable: false },
+]
+
+export const mockTemplates: ExportTemplate[] = [
+  {
+    id: 'tpl-1',
+    name: 'Inventory List',
+    description: 'Full item list with attributes for procurement',
+    ownerId: 'user-1',
+    tenantId: 'tenant-1',
+    fields: [
+      { key: 'itemId', label: 'Item ID', type: 'string' },
+      { key: 'name', label: 'Item Name', type: 'string' },
+      { key: 'category', label: 'Category', type: 'string' },
+      { key: 'location', label: 'Location', type: 'string' },
+      { key: 'condition', label: 'Condition', type: 'string' },
+    ],
+    filters: [],
+    sorts: [{ field: 'location', direction: 'asc' }],
+    templateFor: 'procurement',
+    createdAt: '2025-02-15T10:00:00Z',
+    updatedAt: '2025-02-28T14:30:00Z',
+  },
+  {
+    id: 'tpl-2',
+    name: 'Condition Summary',
+    description: 'Condition distribution by type for facilities',
+    ownerId: 'user-1',
+    tenantId: 'tenant-1',
+    fields: [
+      { key: 'category', label: 'Category', type: 'string' },
+      { key: 'condition', label: 'Condition', type: 'string' },
+      { key: 'location', label: 'Location', type: 'string' },
+    ],
+    filters: [],
+    sorts: [{ field: 'category', direction: 'asc' }],
+    templateFor: 'facilities',
+    createdAt: '2025-02-16T10:00:00Z',
+    updatedAt: '2025-02-27T09:00:00Z',
+  },
+  {
+    id: 'tpl-3',
+    name: 'Exceptions Report',
+    description: 'Flagged items and exceptions for review',
+    ownerId: 'user-1',
+    tenantId: 'tenant-1',
+    fields: [
+      { key: 'itemId', label: 'Item ID', type: 'string' },
+      { key: 'name', label: 'Item Name', type: 'string' },
+      { key: 'status', label: 'Status', type: 'string' },
+      { key: 'notes', label: 'Notes', type: 'string' },
+    ],
+    filters: [{ key: 'status', operator: 'eq', value: 'exception' }],
+    sorts: [{ field: 'auditDate', direction: 'desc' }],
+    templateFor: 'facilities',
+    createdAt: '2025-02-17T10:00:00Z',
+    updatedAt: '2025-02-26T11:00:00Z',
+  },
+  {
+    id: 'tpl-4',
+    name: 'Utilization',
+    description: 'Space and asset utilization for sustainability',
+    ownerId: 'user-1',
+    tenantId: 'tenant-1',
+    fields: [
+      { key: 'location', label: 'Location', type: 'string' },
+      { key: 'category', label: 'Category', type: 'string' },
+      { key: 'condition', label: 'Condition', type: 'string' },
+    ],
+    filters: [],
+    sorts: [{ field: 'location', direction: 'asc' }],
+    templateFor: 'sustainability',
+    createdAt: '2025-02-18T10:00:00Z',
+    updatedAt: '2025-02-25T16:00:00Z',
+  },
+]
+
+export const mockSchedules: Schedule[] = [
+  {
+    id: 'sched-1',
+    name: 'Weekly Inventory',
+    cronExpression: '0 6 * * 1',
+    format: 'CSV',
+    recipients: ['procurement@company.com'],
+    enabled: true,
+    retentionDays: 90,
+    lastRunAt: '2025-02-24T06:00:00Z',
+    nextRunAt: '2025-03-03T06:00:00Z',
+    exportConfigId: 'cfg-1',
+    createdAt: '2025-02-01T10:00:00Z',
+    updatedAt: '2025-02-24T06:00:00Z',
+  },
+]
+
+export const mockExportHistory: ExportJob[] = [
+  {
+    id: 'job-1',
+    exportConfigId: 'cfg-1',
+    status: 'Completed',
+    format: 'CSV',
+    generatedAt: '2025-03-01T09:15:00Z',
+    downloadUrl: 'https://example.com/exports/inventory-q1.csv',
+    fileSizeBytes: 245760,
+    errorMessage: null,
+    scheduleId: 'sched-1',
+    createdAt: '2025-03-01T09:10:00Z',
+  },
+  {
+    id: 'job-2',
+    exportConfigId: 'cfg-2',
+    status: 'Completed',
+    format: 'PDF',
+    generatedAt: '2025-02-28T14:30:00Z',
+    downloadUrl: 'https://example.com/exports/condition-summary.pdf',
+    fileSizeBytes: 512000,
+    errorMessage: null,
+    createdAt: '2025-02-28T14:25:00Z',
+  },
+  {
+    id: 'job-3',
+    exportConfigId: 'cfg-3',
+    status: 'Failed',
+    format: 'CSV',
+    generatedAt: null,
+    downloadUrl: null,
+    fileSizeBytes: null,
+    errorMessage: 'Export timeout - dataset too large',
+    createdAt: '2025-02-27T11:00:00Z',
+  },
+  {
+    id: 'job-4',
+    exportConfigId: 'cfg-1',
+    status: 'InProgress',
+    format: 'CSV',
+    generatedAt: null,
+    downloadUrl: null,
+    fileSizeBytes: null,
+    errorMessage: null,
+    createdAt: '2025-03-01T10:00:00Z',
+  },
+]
+
+export const mockExportConfig: ExportConfig = {
+  id: 'cfg-1',
+  name: 'Inventory List Q1',
+  fields: mockTemplates[0]?.fields ?? [],
+  filters: [],
+  sorts: [{ field: 'location', direction: 'asc' }],
+  format: 'CSV',
+  templateId: 'tpl-1',
+  createdBy: 'user-1',
+  createdAt: '2025-02-20T10:00:00Z',
+}

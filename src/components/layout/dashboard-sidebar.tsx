@@ -27,7 +27,7 @@ const navItems = [
   { to: '/dashboard/sites', icon: MapPin, label: 'Sites' },
   { to: '/dashboard/review-queue', icon: CheckSquare, label: 'Review Queue' },
   { to: '/dashboard/merge', icon: Merge, label: 'Merge & Duplicates' },
-  { to: '/dashboard/reports', icon: FileText, label: 'Reports' },
+  { to: '/dashboard/reports-exports', icon: FileText, label: 'Reports & Exports' },
   { to: '/dashboard/analytics', icon: BarChart3, label: 'Analytics' },
 ]
 
