@@ -37,7 +37,7 @@ export function SecuritySettings() {
 
   if (isLoading) {
     return (
-      <Card className="rounded-2xl shadow-card">
+      <Card className="rounded-2xl shadow-card animate-fade-in">
         <CardHeader>
           <div className="h-6 w-48 animate-pulse rounded bg-muted" />
           <div className="mt-2 h-4 w-64 animate-pulse rounded bg-muted" />
@@ -52,7 +52,7 @@ export function SecuritySettings() {
 
   return (
     <>
-      <Card className="rounded-2xl shadow-card transition-shadow duration-200 hover:shadow-elevated">
+      <Card className="rounded-2xl shadow-card animate-fade-in-up transition-shadow duration-200 hover:shadow-elevated">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Shield className="h-5 w-5" />
@@ -76,7 +76,7 @@ export function SecuritySettings() {
             <Button
               id="change-password"
               variant="outline"
-              className="rounded-full"
+              className="rounded-full border-primary/50 hover:bg-primary/10 hover:border-primary"
               onClick={() => setChangePasswordOpen(true)}
             >
               Change password
@@ -91,7 +91,7 @@ export function SecuritySettings() {
                   {enabled && (
                     <Badge
                       variant="secondary"
-                      className="ml-2 rounded-full bg-primary/20 text-primary"
+                      className="ml-2 rounded-full bg-primary/20 text-foreground"
                     >
                       Active
                     </Badge>

@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils'
 
 export function UserProfileSettingsContainer() {
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-8 animate-fade-in-up">
       <div>
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <User className="h-7 w-7" />

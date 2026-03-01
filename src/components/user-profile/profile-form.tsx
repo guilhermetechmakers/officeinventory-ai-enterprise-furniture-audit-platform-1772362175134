@@ -20,10 +20,17 @@ import { TIMEZONES } from '@/lib/timezones'
 import { cn } from '@/lib/utils'
 import type { UserProfile } from '@/types/user-profile'
 
+const PHONE_REGEX = /^\+?[\d\s\-()]{10,20}$/
+
 const profileSchema = z.object({
   name: z.string().min(1, 'Name is required').trim(),
   email: z.string().email('Invalid email format'),
-  phone: z.string().optional(),
+  phone: z
+    .string()
+    .optional()
+    .refine((v) => !v || v.trim() === '' || PHONE_REGEX.test(v.trim()), {
+      message: 'Invalid phone format. Use international format (e.g. +1 555 000 0000)',
+    }),
   timezone: z.string().min(1, 'Timezone is required'),
 })
 
@@ -51,13 +58,17 @@ export function ProfileForm() {
   })
 
   const onSubmit = form.handleSubmit(async (values) => {
-    await updateProfile.mutateAsync({
-      name: values.name,
-      email: values.email,
-      phone: values.phone || null,
-      timezone: values.timezone,
-    })
-    setIsEditing(false)
+    try {
+      await updateProfile.mutateAsync({
+        name: values.name,
+        email: values.email,
+        phone: values.phone?.trim() || null,
+        timezone: values.timezone,
+      })
+      setIsEditing(false)
+    } catch {
+      form.reset(toFormValues(profile))
+    }
   })
 
   const onCancel = () => {
@@ -67,7 +78,7 @@ export function ProfileForm() {
 
   if (isLoading) {
     return (
-      <Card className="animate-fade-in">
+      <Card className="rounded-2xl shadow-card animate-fade-in">
         <CardHeader>
           <div className="h-6 w-48 animate-pulse rounded bg-muted" />
           <div className="h-4 w-64 animate-pulse rounded bg-muted" />
@@ -82,7 +93,7 @@ export function ProfileForm() {
   }
 
   return (
-    <Card className="animate-fade-in transition-all duration-300 hover:shadow-elevated">
+    <Card className="rounded-2xl shadow-card animate-fade-in-up transition-all duration-300 hover:shadow-elevated">
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
         <div>
           <CardTitle>Profile</CardTitle>
@@ -117,7 +128,7 @@ export function ProfileForm() {
               form="profile-form"
               size="sm"
               disabled={updateProfile.isPending}
-              className="rounded-full"
+              className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
               aria-label="Save profile"
             >
               <Check className="h-4 w-4" />
@@ -181,9 +192,9 @@ export function ProfileForm() {
                   <SelectValue placeholder="Select timezone" />
                 </SelectTrigger>
                 <SelectContent>
-                  {(TIMEZONES as readonly string[]).map((tz) => (
-                    <SelectItem key={tz} value={tz}>
-                      {tz.replace(/_/g, ' ')}
+                  {(Array.isArray(TIMEZONES) ? TIMEZONES : []).map((tz) => (
+                    <SelectItem key={String(tz)} value={String(tz)}>
+                      {String(tz).replace(/_/g, ' ')}
                     </SelectItem>
                   ))}
                 </SelectContent>

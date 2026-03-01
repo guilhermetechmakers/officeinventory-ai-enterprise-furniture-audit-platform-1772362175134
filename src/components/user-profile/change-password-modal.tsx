@@ -188,7 +188,7 @@ export function ChangePasswordModal({ open, onOpenChange }: ChangePasswordModalP
             </Button>
             <Button
               type="submit"
-              className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
+              className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
               disabled={changePassword.isPending}
             >
               {changePassword.isPending ? 'Changing…' : 'Change password'}

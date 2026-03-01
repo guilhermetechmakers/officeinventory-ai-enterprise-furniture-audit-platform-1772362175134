@@ -326,281 +326,208 @@ All dashboard pages should be nested inside the dashboard layout, not separate r
 
 ## User Design Requirements
 
-- Use high-contrast accent green for primary actions and active statuses
-- Maintain a balanced visual hierarchy with prominent headings and clear labels
-- Ensure edge-to-edge card layouts with left-aligned text and center-aligned key metrics
-- Subtle hover effects and micro-interactions to convey interactivity
-- Ensure accessibility considerations (keyboard navigation, focus rings, readable color contrast)
-
-API integrations:
-- There are no external APIs connected in this MVP, but internal endpoints should be designed for tenant isolation and future extension to SSO providers, user directory services, and billing systems.
-
-## Components to Build
-- AdminDashboardShell
-  - Layout: Top navigation bar, left sidebar, content area
-  - State: ActiveSection, userPermissions, theme tokens
-- TenantSettingsPanel
-  - Create/Update Tenant form (name, domain, allowedSites, quotas)
-  - Site creation workflow with stepper
-  - Validation and live previews
-- SSOConfigurationPanel
-  - SAML/OIDC configuration forms
-  - Certificate management, metadata import, and test connection
-  - Validation of endpoints and assertions
-- UserManagementPanel
-  - Invite user form (email, role, tenant scope)
-  - User list with search, filters, pagination
-  - Role assignment UI (role picker, permissions summary)
-  - Activate/Deactivate, lockout, and audit actions
-- SystemHealthPanel
-  - Health metrics cards (queue depths, storage usage, error rates)
-  - Time-series mini-charts placeholders or embedded charts
-  - Alerts panel with actionable items
-- BillingOverviewPanel
-  - Subscription tier display, usage credits, invoices
-  - Payment status indicators, renewal date, upgrade prompts
-  - Invoice list with download actions
-- GenericDataTable
-  - Reusable table with selection, bulk actions, sorting, and pagination
-- ValidationErrorTooltip
-  - Consistent inline validation UX for forms
-- NotificationToast
-  - Success/error/warning toasts with auto-dismiss and action buttons
-- AuditLogPanel (optional)
-  - View and filter admin action logs
-- ConfirmDialog
-  - Reusable modal for destructive or critical actions
-
-Technical details for components:
-- Use consistent prop shapes and TypeScript interfaces
-- Guard all data accesses for null/undefined
-- Always validate API responses and normalize data
-- Ensure all arrays are initialized as empty arrays and guarded with Array.isArray checks
-- Use data ?? [] for Supabase-like results and Array.isArray guards where arrays are expected
-
-## Implementation Requirements
-
-### Frontend
-- Framework: React with TypeScript (next.js or CRA-based, depending on project)
-- State management: useState and useReducer for local UI state; optional context or lightweight state store for cross-panel data
-- Hooks: Custom hooks for data fetching, mutations, and form handling with null safety
-- Components: Reusable, composable UI units following the design system
-- UI libraries: Prefer native components or your existing design system tokens; avoid injecting raw nulls into maps or renders
-- Forms: Controlled components with explicit default values; initialize arrays as [] via useState<Type[]>([])
-- Data handling: Guard all operations with (array ?? []).map(...) or Array.isArray(array) ? array.map(...) : []
-- API integration (mocked or internal): Define fetch endpoints for tenants, SSO, users, health, and billing. Validate responses:
-  - const list = Array.isArray(response?.data) ? response.data : []
-  - const { count = 0 } = response ?? {}
-- Validation: Client-side validation with descriptive error messages; server-side safe fallbacks
-- Accessibility: ARIA roles, semantic HTML, keyboard focus management
+rounded cards (16–24px), shadow elevation, accent green (#C9FF52) for primary actions, white surfaces, black navigation surfaces, and subtle dividers.
+  - Layout: Left-aligned text, center-aligned key metrics (e.g., MFA status pill counts if displayed), edge-to-edge card layouts.
+  - Accessibility: Keyboard navigable, proper aria-labels, high-contrast states for active elements.
+- API contracts (frontend-facing):
+  - Endpoints to be consumed (hypothetical but must be clearly defined in code structure):
+    - GET /api/user/profile
+    - PUT /api/user/profile (fields: name, email, phone, timezone)
+    - POST /api/user/password/change
+    - POST /api/user/mfa/toggle
+    - GET /api/user/mfa/providers
+    - POST /api/user/mfa/enroll (provider activate)
+    - GET /api/user/notifications/preferences
+    - PUT /api/user/notifications/preferences
+    - GET /api/user/sso/linked
+    - POST /api/user/sso/link
+    - DELETE /api/user/sso/unlink
+    - GET /api/user/sessions
+    - POST /api/user/sessions/revoke
+- Data handling patterns:
+  - Use data ?? [] for arrays returned by fetch-like calls
+  - Validate all API shapes with Array.isArray checks
+  - Destructure with defaults: const { items = [], count = 0 } = response ?? {}
+- Form validations:
+  - Name: non-empty
+  - Email: valid email format
+  - Phone: optional, but if present, validated format
+  - Timezone: from a curated list
+  - Password: minimum length, complexity checks
+- Security considerations:
+  - Sensitive actions (password change, MFA enable/disable, unlink SSO, revoke session) require confirmation dialogs and possibly re-auth prompts
+  - Do not leak sensitive data in UI; mask session IPs where necessary
+- Data flow:
+  - All mutations should optimistically update UI with rollback on error
+  - Use loading states per section
+  - Provide success/failure toast or inline messages
 
 ### Backend
-- Endpoints (internal):
-  - Tenant Settings
-    - GET /api/admin/tenants
-    - POST /api/admin/tenants
-    - PUT /api/admin/tenants/{id}
-  - SSO Configuration
-    - GET /api/admin/sso
-    - POST /api/admin/sso/test
-    - PUT /api/admin/sso/{id}
-  - User Management
-    - GET /api/admin/users
-    - POST /api/admin/users/invite
-    - PATCH /api/admin/users/{id}/activate
-    - PATCH /api/admin/users/{id}/deactivate
-    - GET /api/admin/roles
-    - POST /api/admin/roles
-  - System Health
-    - GET /api/admin/health
-  - Billing
-    - GET /api/admin/billing
-    - GET /api/admin/billing/invoices
-- Database schema (high level):
-  - Tenants (id, name, domain, createdAt, settings)
-  - Users (id, email, tenantId, isActive, roles, invitedAt)
-  - Roles (id, name, permissions[])
-  - SSOConfigs (id, tenantId, type, config, status)
-  - HealthMetrics (id, tenantId, metricName, value, timestamp)
-  - Invoices (id, tenantId, periodStart, periodEnd, total, status)
-- Data modeling guidance:
-  - Use strict types; ensure tenant isolation at every access point
-  - Store roles and permissions as arrays; validate on write
-  - Use audit logs for admin actions
-- Security:
-  - Ensure authentication and authorization checks per endpoint
-  - Encrypt sensitive fields at rest; enforce least privilege
-  - Require CSRF protection for state-changing actions if applicable
-- Validation:
-  - Validate inputs server-side (required fields, formats, length)
-  - Normalize and sanitize data
-- Background processing:
-  - Prepare hooks for asynchronous tasks (e.g., SS0 connection tests, invoice processing)
+- API endpoints (assumed, to be wired to actual services):
+  - Profile: GET /api/user/profile, PUT /api/user/profile
+  - Password: POST /api/user/password/change
+  - MFA: GET /api/user/mfa/providers, POST /api/user/mfa/toggle, POST /api/user/mfa/enroll
+  - Notifications: GET /api/user/notifications/preferences, PUT /api/user/notifications/preferences
+  - SSO: GET /api/user/sso/linked, POST /api/user/sso/link, DELETE /api/user/sso/unlink
+  - Sessions: GET /api/user/sessions, POST /api/user/sessions/revoke
+- Data models:
+  - UserProfile: id, name, email, phone, timezone
+  - MFASettings: enabled, methods: [totp, sms, push, webauthn], selectedMethod
+  - NotificationPreferences: email, inApp, push
+  - SSOAccounts: array of linked providers with id, name, avatarUrl, linkedAt
+  - Sessions: id, device, location, lastActive, ipAddress (masked)
+- Security and validation:
+  - All mutating operations require authentication and authorization checks
+  - Validate input payloads on server side; return explicit error codes/messages
 
 ### Integration
-- Data flow:
-  - Admin UI components perform API calls to internal admin endpoints
-  - Data is normalized to UI models; null-safe rendering using (data ?? []) and Array.isArray checks
-  - Actions trigger new state, optimistic UI updates with rollback on failure
-- Consistency:
-  - Centralized error handling and toast notifications
-  - Shared token/theme system for design consistency
-- Extensibility:
-  - Modules are decoupled; new sections can be added with minimal coupling
-  - SSO config supports future provider adapters
+- Data flow patterns:
+  - On load: fetch profile, MFA providers, notification preferences, linked SSO accounts, and sessions in parallel (guard with data ?? [] and Array.isArray checks)
+  - On update: call respective endpoints; update local state optimistically; handle errors with rollback
+  - Re-auth flows for sensitive actions; token refresh handling if needed
+- State management:
+  - Centralized user context or local component state with careful isolation
+  - Use React context for cross-component access to user data if needed
+- Error handling:
+  - Centralized error boundary for the settings area
+  - User-friendly error messages with actionable guidance
 
 ## User Experience Flow
-1. Admin lands on Admin Dashboard; sees overview with health and billing status
-2. Navigate to Tenant Settings to create a new tenant or modify existing tenants
-3. Go to SSO Configuration to connect SAML or OIDC, input metadata, and run a test connection
-4. Open User Management to invite new users, assign roles, and deactivate users as needed
-5. Review System Health metrics and address any alerts
-6. Access Billing to view current subscription, credits, and invoices; download or export invoices
-7. Audit logs (optional) to review admin actions
-8. Take actions with immediate visual feedback via toasts and inline validations
-
-Step-by-step journey:
-- Open Admin Dashboard -> select Tenant Settings -> fill form -> submit -> see success toast; data updates in list
-- Configure SSO -> input data -> Test Connection -> success/wailure feedback
-- Invite user -> specify role -> send invite -> user appears with pending status; can resend or deactivate
-- Check Health -> review metrics and alerts -> acknowledge
-- Review Billing -> view tier, credits, and invoices -> download invoice
-- Optional: view Audit Logs for actions taken
+1. User lands on User Profile & Settings page.
+2. ProfileForm loads with existing data; fields are editable with an edit mode toggle; user saves changes or cancels.
+3. SecuritySettings shows MFA status and a Change Password action; user can enable/disable MFA and enroll methods; sensitive actions prompt re-auth when necessary.
+4. NotificationPreferences presents per-channel toggles; user can enable/disable channels and save. A global toggle affects all channels.
+5. ConnectedAccounts lists linked SSO providers with options to link new providers or unlink; sessions panel lists active sessions with ability to revoke a session after confirmation.
+6. All actions give immediate visual feedback via toasts or inline messages; loading states are displayed per section; errors are surfaced with clear remediation steps.
 
 ## Technical Specifications
 
-Data Models: (TypeScript-style outlines)
-- Tenant
-  - id: string
-  - name: string
-  - domain: string
-  - createdAt: string
-  - settings: { defaultLocale?: string; quotas?: object; }
+- Data Models (Schema Details)
+  - UserProfile: id string, name string, email string, phone string | null, timezone string
+  - MFASettings: enabled boolean, providers string[] (e.g., ["totp", "sms"]), enrolled boolean, defaultProvider string | null
+  - NotificationPreferences: email boolean, inApp boolean, push boolean
+  - SSOAccount: provider string, displayName string, avatarUrl string, linkedAt string (ISO)
+  - Session: id string, device string, location string, lastActive string, ipAddress string | null, isActive boolean
+- API Endpoints (Routes and Methods)
+  - GET /api/user/profile
+  - PUT /api/user/profile (payload: { name, email, phone, timezone })
+  - POST /api/user/password/change (payload: { currentPassword, newPassword })
+  - GET /api/user/mfa/providers
+  - POST /api/user/mfa/toggle (payload: { enabled })
+  - POST /api/user/mfa/enroll (payload: { provider, methodData })
+  - GET /api/user/notifications/preferences
+  - PUT /api/user/notifications/preferences (payload: { email, inApp, push })
+  - GET /api/user/sso/linked
+  - POST /api/user/sso/link (payload: { provider })
+  - DELETE /api/user/sso/unlink (payload: { provider })
+  - GET /api/user/sessions
+  - POST /api/user/sessions/revoke (payload: { sessionId })
+- Security
+  - Ensure endpoints require proper authentication tokens/SSO session
+  - Re-auth prompt for password change and MFA toggling
+  - Audit logging for changes to profile, MFA, SSO, and sessions
+- Validation
+  - Client-side: use regex for email, phone (if enabled), verify timezone from allowed list
+  - Server-side: strict validation with meaningful error messages
+  - Use data ?? [] patterns for arrays; guard all array calls
+- Validation Rules
+  - Name: non-empty; trim whitespace
+  - Email: valid email format
+  - Phone: optional; if provided, match international format if supported
+  - Timezone: must be from supported timezones list
+  - Password: min length 8, must include a number or letter and a special char as per policy
+  - MFA: must have at least one enabled method if enabling MFA
+  - Notifications: at least one channel may be required depending on policy
+- Accessibility
+  - All interactive elements accessible via keyboard
+  - ARIA labels and roles where appropriate
+  - Focus management on dialogs and after actions
 
-- User
-  - id: string
-  - email: string
-  - tenantId: string
-  - isActive: boolean
-  - roles: string[]
-  - invitedAt: string
+## Acceptance Criteria
+- [ ] The User Profile form loads with existing data (guard against nulls) and saves updates correctly with optimistic UI and rollback on error.
+- [ ] MFA can be enabled/disabled with proper re-auth prompts; at least one method is selected when MFA is on.
+- [ ] Notification preferences persist per-channel and support a global toggle; UI reflects current state accurately even if API returns partially null data.
+- [ ] Linked SSO accounts are displayed with correct provider info; linking a new provider and unlinking an existing one works with confirmations.
+- [ ] Active sessions are listed with device/location/lastActive; revoking a session requires user confirmation and reflects immediately in the UI.
+- [ ] All data fetches and mutations guard against null/undefined data using data ?? [] and Array.isArray checks; all arrays are initialized with proper useState defaults.
+- [ ] UI adheres to the design system: cards, top navigation, color tokens, typography, spacing, and micro-interactions are consistent.
+- [ ] All endpoints are properly named and documented; payloads validated client- and server-side; errors surfaced clearly.
 
-- Role
-  - id: string
-  - name: string
-  - permissions: string[]
-
-- SSOConfig
-  - id: string
-  - tenantId: string
-  - type: 'SAML' | 'OIDC'
-  - config: { issuer?: string; entryPoint?: string; cert?: string; clientId?: string; clientSecret?: string; metadata?: string }
-  - status: 'configured' | 'invalid' | 'testing'
-
-- HealthMetric
-  - id: string
-  - tenantId: string
-  - metricName: string
-  - value: number
-  - timestamp: string
-
-- Invoice
-  - id: string
-  - tenantId: string
-  - periodStart: string
-  - periodEnd: string
-  - total: number
-  - status: 'paid' | 'unpaid' | 'overdue'
-
-API Endpoints: (Routes and methods)
-- GET /api/admin/tenants
-- POST /api/admin/tenants
-- PUT /api/admin/tenants/{id}
-- GET /api/admin/sso
-- POST /api/admin/sso/test
-- PUT /api/admin/sso/{id}
-- GET /api/admin/users
-- POST /api/admin/users/invite
-- PATCH /api/admin/users/{id}/activate
-- PATCH /api/admin/users/{id}/deactivate
-- GET /api/admin/roles
-- POST /api/admin/roles
-- GET /api/admin/health
-- GET /api/admin/billing
-- GET /api/admin/billing/invoices
-
-Security: Authentication, authorization requirements
-- Enforce admin-level authentication for all endpoints
-- Use RBAC to restrict actions: tenant admins, system admins
-- Audit logging for critical actions: tenant creation, SSO config changes, user invites, role changes, billing updates
-- Encrypted storage for sensitive fields (SSO secrets, certificates)
-- CSRF protection for state-changing endpoints if applicable
-
-Validation: Input validation rules
-- Tenant: name required, domain must be valid URL-like string, unique per tenant
-- SSO: type must be SAML or OIDC; required fields per type; valid endpoints and certificate formats
-- User invite: email must be valid, role must exist, tenantId must match
-- Roles: name required, permissions array must contain valid permission keys
-- Health: numeric metrics validated, timestamps in ISO format
-- Billing: totals must be numbers, status in allowed set
-
-Acceptance Criteria
-- [ ] All data fetching and mutations guard against null/undefined; arrays initialized as [] and accessed with Array.isArray() checks
-- [ ] Admin Dashboard renders without runtime errors; all lists rendered with safe guards
-- [ ] Tenant settings create/update flows validate inputs and reflect changes in UI
-- [ ] SSO configuration allows test connection flow with clear success/failure feedback
-- [ ] User management supports invite, role assignment, activation/deactivation with proper state updates
-- [ ] Health metrics display accurate values with non-blocking UI
-- [ ] Billing view shows tier, credits, and invoices; invoices downloadable
-- [ ] Audit log captures critical admin actions and is accessible (if implemented)
-
-UI/UX Guidelines
+## UI/UX Guidelines
 Apply the project's design system:
 ---
 Visual Style
-- Color Palette: as provided
-- Typography & Layout: Inter/Circular/SF Pro; bold headings, medium labels; generous spacing 24–32px
-- Key Design Elements: Card design with rounded corners, subtle shadows; top navigation pill-shaped; side navigation with icons; data visualization hints via cards
-- Interactive Elements: Pill-shaped buttons, outlined/filled variants, focus states, hover micro-interactions
-- Design Philosophy: Modern, minimalist, enterprise-ready with clear feedback and modularity
 
-Accessibility
-- Keyboard navigable UI
-- ARIA attributes where appropriate
-- Clear contrast ratios for text and UI elements
+Color Palette:
+- Primary background: Soft light gray (#F5F6F8)
+- Card backgrounds: Slightly darker gray (#E8E9EC) or white
+- Accent: Lime green (#C9FF52) for primary actions and active states
+- Surfaces: White (#FFFFFF) for cards/modal surfaces; Black surfaces (#18191A) for navigation/summary panels
+- Text: Primary #232323; Secondary #6B6B6B; White on dark backgrounds
+- Warnings/Errors: Red (#FF5E5E); Secondary statuses: Orange (#FFC85E), Sky blue (#6ECFFF)
+- Relationships: Strong contrast between lime green and neutrals; black panels anchor sections
 
-Performance & Reliability
-- Lazy load heavy components; paginate long lists
-- Debounce/Throttle input handling for search and filters
-- Use skeletons or placeholders while loading data
-- Ensure error boundaries and retry strategies
+Typography & Layout:
+- Font family: Inter, SF Pro, or Circular
+- Weights: Regular body, Bold headings, Medium for labels/CTAs
+- Hierarchy: Large bold headings, mid-weight subheads, lighter metadata
+- Spacing: Generous padding/margins between sections (24–32px), consistent vertical rhythm
+- Alignment: Left text; center-aligned key metrics; edge-to-edge card layouts
 
-Testing
-- Unit tests for data normalization and utility functions
-- Integration tests for end-to-end flows (tenant creation, user invite, SSO test)
-- UI tests for core paths (dashboard render, panel navigation)
+Key Design Elements
 
-Fulfillment Notes
-- When implementing, ensure all data paths are null-safe:
-  - const tenants = Array.isArray(data?.tenants) ? data.tenants : []
-  - const items = (data ?? []) // if API returns an array
-  - Use data ?? [] in all Supabase-like fetch results
-- Initialize all useState with explicit types:
-  - const [tenants, setTenants] = useState<Tenant[]>([])
-  - const [users, setUsers] = useState<User[]>([])
-  - const [roles, setRoles] = useState<Role[]>([])
-- Guard array operations:
-  - (tenants ?? []).map(...)
-  - Array.isArray(users) ? users.map(...) : []
-- Validate API shapes:
-  - const list = Array.isArray(response?.data) ? response.data : []
-  - const { count = 0 } = response ?? {}
-- Use optional chaining for nested objects:
-  - const email = user?.email
-- Destructure with defaults:
-  - const { items = [], count = 0 } = response ?? {}
+Card Design:
+- Rounded corners 16–24px; mild shadows
+- Minimal borders; shadow and spacing define separation
+- Hover/active: subtle shadow or outline; accent green highlight for selected cards
+- Visual hierarchy: Prominent title, metadata, icons/tags at bottom
 
-This prompt provides a thorough, actionable blueprint for AI development tools to implement a robust Admin Dashboard with a strong emphasis on runtime safety, data integrity, modular architecture, and a polished user experience aligned with the given design system.
+Navigation:
+- Top bar: Pill-shaped, black with white and accent green highlights for active items
+- Sidebar: Minimal vertical icon stack; dividers
+- Active states: High-contrast green/white on black; pill backgrounds for current section
+- Collapsible/expandable: Not required, but structure supports modular expansion
+
+Data Visualization:
+- Not directly shown; summary panels may hint at bold numerals and labels
+- Treatments: Accent colors for status; white/black surfaces for separation
+- Patterns: Inline status pills or micro-charts as needed for quick-glance metrics
+
+Interactive Elements:
+- Buttons: Pill-shaped; filled with accent green or black, or outlined
+- Form Elements: Soft rounded inputs with focus states
+- Hover: Subtle shadows, color transitions
+- Micro-interactions: Subtle icon motions for feedback
+
+Design Philosophy:
+- Modern, minimalist, enterprise-ready; high clarity and actionable elements
+- Emphasize simplicity, whitespace, visual hierarchy
+- Rounded shapes, high-contrast accents
+- Frictionless navigation, quick scanning, clear status/feedback
+- Modularity for scalable workflows
+
+Mandatory Coding Standards — Runtime Safety
+CRITICAL: Implement in all code:
+1) Supabase-like results use data ?? [] patterns
+2) Guard array methods: (items ?? []).map(...) or Array.isArray(items) ? items.map(...) : []
+3) useState for arrays: useState<Type[]>([]) defaults
+4) API response shapes validated: const list = Array.isArray(response?.data) ? response.data : []
+5) Optional chaining for nested data
+6) Destructuring with defaults: const { items = [], count = 0 } = response ?? {}
+
+Project Context alignment:
+- Target: OfficeInventory AI – but this prompt focuses on User Profile & Settings feature within a broader enterprise app. Ensure the code structure remains generic and pluggable for future integrations (e.g., AI layers, audit logs, multi-tenant contexts).
+
+Generate the complete, detailed prompt now:
+- Provide a ready-to-run, developer-facing specification that an AI coding tool can interpret to scaffold, implement, and test the feature end-to-end.
+- Include explicit file/folder structure recommendations, component APIs, data-fetch hooks, test strategies (unit/integration), and a sample data model/typescript interfaces.
+- Include example API mocks, error-handling patterns, and migration notes if data models change.
+- Include a minimal but working example snippet for one component (e.g., ProfileForm) demonstrating runtime safety patterns and use of data ?? [] guards.
+
+Notes:
+- Ensure every code sample adheres to the runtime safety rules outlined above.
+- Emphasize testability: unit tests for input validation, integration tests for API call flows, and snapshot tests for UI components where appropriate.
+- Provide actionable steps, not just concepts, to enable a developer tool to generate the complete feature with minimal human intervention.
 
 ## Implementation Notes
 

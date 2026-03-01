@@ -30,11 +30,24 @@ function formatRelativeTime(iso: string): string {
   return date.toLocaleDateString()
 }
 
+/** Mask IP address for privacy - show only first two octets for IPv4 */
+function maskIpAddress(ip: string | null | undefined): string {
+  if (!ip || typeof ip !== 'string') return ''
+  const trimmed = ip.trim()
+  if (!trimmed) return ''
+  const parts = trimmed.split('.')
+  if (parts.length >= 4) {
+    return `${parts[0]}.${parts[1]}.***.***`
+  }
+  return trimmed.replace(/\d+$/, '***')
+}
+
 function LinkedSSOCard({ account }: { account: SSOAccount }) {
   const [showConfirm, setShowConfirm] = useState(false)
   const unlink = useUnlinkSSO()
 
-  const initial = PROVIDER_ICONS[account.provider] ?? account.displayName?.charAt(0) ?? '?'
+  const displayName = account?.displayName ?? account?.provider ?? 'Unknown'
+  const initial = PROVIDER_ICONS[account?.provider ?? ''] ?? displayName?.charAt(0) ?? '?'
 
   return (
     <>
@@ -46,15 +59,15 @@ function LinkedSSOCard({ account }: { account: SSOAccount }) {
       >
         <div className="flex items-center gap-3">
           <Avatar className="h-12 w-12 rounded-xl">
-            <AvatarImage src={account.avatarUrl} alt={account.displayName} />
+            <AvatarImage src={account?.avatarUrl} alt={displayName} />
             <AvatarFallback className="rounded-xl bg-primary/20 text-primary-foreground">
               {initial}
             </AvatarFallback>
           </Avatar>
           <div>
-            <p className="font-medium">{account.displayName}</p>
+            <p className="font-medium">{displayName}</p>
             <p className="text-sm text-muted-foreground">
-              Linked {formatRelativeTime(account.linkedAt)}
+              Linked {formatRelativeTime(account?.linkedAt ?? '')}
             </p>
           </div>
         </div>
@@ -63,7 +76,7 @@ function LinkedSSOCard({ account }: { account: SSOAccount }) {
           size="sm"
           className="rounded-full text-destructive hover:bg-destructive/10 hover:text-destructive"
           onClick={() => setShowConfirm(true)}
-          aria-label={`Unlink ${account.displayName}`}
+          aria-label={`Unlink ${displayName}`}
         >
           <Unlink className="h-4 w-4" />
           Unlink
@@ -74,11 +87,11 @@ function LinkedSSOCard({ account }: { account: SSOAccount }) {
         open={showConfirm}
         onOpenChange={setShowConfirm}
         title="Unlink account"
-        description={`Are you sure you want to unlink ${account.displayName}? You may need to use another sign-in method.`}
+        description={`Are you sure you want to unlink ${displayName}? You may need to use another sign-in method.`}
         confirmLabel="Unlink"
         variant="destructive"
         onConfirm={async () => {
-          await unlink.mutateAsync({ provider: account.provider })
+          await unlink.mutateAsync({ provider: account?.provider ?? '' })
         }}
         loading={unlink.isPending}
       />
@@ -103,23 +116,25 @@ function SessionRow({ session }: { session: Session }) {
             <Monitor className="h-5 w-5 text-muted-foreground" />
           </div>
           <div>
-            <p className="font-medium">{session.device}</p>
+            <p className="font-medium">{session?.device ?? 'Unknown device'}</p>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
               <span className="flex items-center gap-1">
                 <MapPin className="h-3.5 w-3.5" />
-                {session.location}
+                {session?.location ?? 'Unknown'}
               </span>
               <span className="flex items-center gap-1">
                 <Clock className="h-3.5 w-3.5" />
-                {formatRelativeTime(session.lastActive)}
+                {formatRelativeTime(session?.lastActive ?? '')}
               </span>
               {session.ipAddress && (
-                <span className="font-mono text-xs">{session.ipAddress}</span>
+                <span className="font-mono text-xs" title="IP masked for privacy">
+                  {maskIpAddress(session.ipAddress)}
+                </span>
               )}
             </div>
           </div>
         </div>
-        {session.isActive ? (
+        {session?.isActive ? (
           <span className="rounded-full bg-primary/20 px-2.5 py-0.5 text-xs font-medium text-primary-foreground">
             Current session
           </span>
@@ -129,7 +144,7 @@ function SessionRow({ session }: { session: Session }) {
             size="sm"
             className="rounded-full text-destructive hover:bg-destructive/10 hover:text-destructive"
             onClick={() => setShowConfirm(true)}
-            aria-label={`Revoke session on ${session.device}`}
+            aria-label={`Revoke session on ${session?.device ?? 'device'}`}
           >
             Revoke
           </Button>
@@ -140,11 +155,11 @@ function SessionRow({ session }: { session: Session }) {
         open={showConfirm}
         onOpenChange={setShowConfirm}
         title="Revoke session"
-        description={`Revoke access from ${session.device}? This will sign out that device.`}
+        description={`Revoke access from ${session?.device ?? 'this device'}? This will sign out that device.`}
         confirmLabel="Revoke"
         variant="destructive"
         onConfirm={async () => {
-          await revoke.mutateAsync({ sessionId: session.id })
+          await revoke.mutateAsync({ sessionId: session?.id ?? '' })
         }}
         loading={revoke.isPending}
       />
@@ -167,7 +182,7 @@ export function ConnectedAccounts() {
 
   if (ssoLoading && sessionsLoading) {
     return (
-      <Card className="animate-fade-in">
+      <Card className="rounded-2xl shadow-card animate-fade-in">
         <CardHeader>
           <div className="h-6 w-48 animate-pulse rounded bg-muted" />
           <div className="h-4 w-64 animate-pulse rounded bg-muted" />
@@ -182,7 +197,7 @@ export function ConnectedAccounts() {
 
   return (
     <div className="space-y-6">
-      <Card className="animate-fade-in transition-all duration-300 hover:shadow-elevated">
+      <Card className="rounded-2xl shadow-card animate-fade-in-up transition-all duration-300 hover:shadow-elevated">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Link2 className="h-5 w-5" />
@@ -193,12 +208,12 @@ export function ConnectedAccounts() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {accounts.map((account) => (
-            <LinkedSSOCard key={account.provider} account={account} />
+          {(accounts ?? []).map((account, idx) => (
+            <LinkedSSOCard key={account?.provider ?? `sso-${idx}`} account={account} />
           ))}
           <Button
             variant="outline"
-            className="w-full rounded-full"
+            className="w-full rounded-full border-primary/50 hover:bg-primary/10 hover:border-primary"
             onClick={handleLinkSSO}
           >
             <Link2 className="h-4 w-4" />
@@ -207,7 +222,7 @@ export function ConnectedAccounts() {
         </CardContent>
       </Card>
 
-      <Card className="animate-fade-in transition-all duration-300 hover:shadow-elevated">
+      <Card className="rounded-2xl shadow-card animate-fade-in-up transition-all duration-300 hover:shadow-elevated">
         <CardHeader>
           <CardTitle>Active sessions</CardTitle>
           <CardDescription>
@@ -224,8 +239,8 @@ export function ConnectedAccounts() {
               </p>
             </div>
           ) : (
-            sessionList.map((session) => (
-              <SessionRow key={session.id} session={session} />
+            (sessionList ?? []).map((session, idx) => (
+              <SessionRow key={session?.id ?? `session-${idx}`} session={session} />
             ))
           )}
         </CardContent>

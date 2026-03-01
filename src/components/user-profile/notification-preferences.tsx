@@ -1,10 +1,10 @@
 import * as React from 'react'
 import { Bell, Mail, Smartphone, MessageSquare } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { useNotificationPreferences, useUpdateNotificationPreferences } from '@/hooks/use-user-profile'
-import { cn } from '@/lib/utils'
 
 const CHANNELS: { key: 'email' | 'inApp' | 'push'; label: string; icon: React.ElementType }[] = [
   { key: 'email', label: 'Email', icon: Mail },
@@ -44,7 +44,7 @@ export function NotificationPreferences() {
 
   if (isLoading) {
     return (
-      <Card className="rounded-2xl shadow-card">
+      <Card className="rounded-2xl shadow-card animate-fade-in">
         <CardHeader>
           <div className="h-6 w-48 animate-pulse rounded bg-muted" />
           <div className="mt-2 h-4 w-64 animate-pulse rounded bg-muted" />
@@ -62,7 +62,7 @@ export function NotificationPreferences() {
   }
 
   return (
-    <Card className="rounded-2xl shadow-card transition-shadow duration-200 hover:shadow-elevated">
+    <Card className="rounded-2xl shadow-card animate-fade-in-up transition-shadow duration-200 hover:shadow-elevated">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Bell className="h-5 w-5" />
@@ -110,20 +110,18 @@ export function NotificationPreferences() {
         </div>
 
         {hasChanges && (
-          <div className="flex justify-end pt-2">
-            <button
+          <div className="flex flex-col items-end gap-2 pt-2">
+            {!localPrefs.email && !localPrefs.inApp && !localPrefs.push && (
+              <p className="text-sm text-warning">At least one notification channel is recommended.</p>
+            )}
+            <Button
               type="button"
               onClick={handleSave}
               disabled={updatePrefs.isPending}
-              className={cn(
-                'rounded-full px-4 py-2 text-sm font-medium transition-all duration-200',
-                'bg-primary text-primary-foreground hover:bg-primary/90',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-                'disabled:opacity-50 disabled:cursor-not-allowed'
-              )}
+              className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
             >
               {updatePrefs.isPending ? 'Saving…' : 'Save preferences'}
-            </button>
+            </Button>
           </div>
         )}
       </CardContent>
