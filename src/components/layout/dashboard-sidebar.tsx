@@ -15,6 +15,7 @@ import {
   ChevronRight,
   Upload,
   MapPin,
+  SlidersHorizontal,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -34,6 +35,7 @@ const navItems = [
 
 const adminItems = [
   { to: '/dashboard/profile', icon: UserCircle, label: 'Profile' },
+  { to: '/dashboard/tenant-settings', icon: SlidersHorizontal, label: 'Tenant Settings' },
   { to: '/dashboard/admin', icon: Settings, label: 'Admin' },
   { to: '/dashboard/users', icon: Users, label: 'Users' },
 ]

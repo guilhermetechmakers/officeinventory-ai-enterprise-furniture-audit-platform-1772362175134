@@ -30,6 +30,7 @@ import { SettingsPage } from '@/pages/dashboard/settings'
 import { ProfilePage } from '@/pages/dashboard/profile'
 import { UsersPage } from '@/pages/dashboard/users'
 import { SitesPage } from '@/pages/dashboard/sites'
+import { TenantSettingsDashboardPage } from '@/pages/dashboard/tenant-settings'
 
 export const router = createBrowserRouter([
   { path: '/', element: <LandingPage /> },
@@ -70,6 +71,7 @@ export const router = createBrowserRouter([
       { path: 'reports-exports', element: <ReportsPage /> },
       { path: 'analytics', element: <AnalyticsPage /> },
       { path: 'admin', element: <AdminPage /> },
+      { path: 'tenant-settings', element: <TenantSettingsDashboardPage /> },
       { path: 'settings', element: <SettingsPage /> },
       { path: 'profile', element: <ProfilePage /> },
       { path: 'users', element: <UsersPage /> },

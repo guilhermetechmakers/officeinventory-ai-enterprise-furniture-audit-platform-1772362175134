@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   ChevronLeft,
   ChevronRight,
+  Settings2,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -17,6 +18,7 @@ import type { AdminSection } from '@/types/admin'
 const adminNavItems: { id: AdminSection; icon: React.ElementType; label: string }[] = [
   { id: 'overview', icon: LayoutDashboard, label: 'Overview' },
   { id: 'tenants', icon: Building2, label: 'Tenant Settings' },
+  { id: 'preferences', icon: Settings2, label: 'Settings & Preferences' },
   { id: 'sso', icon: Shield, label: 'SSO' },
   { id: 'users', icon: Users, label: 'Users & Roles' },
   { id: 'health', icon: Activity, label: 'Health' },

@@ -150,6 +150,7 @@ export interface AuditLogEntry {
 export type AdminSection =
   | 'overview'
   | 'tenants'
+  | 'preferences'
   | 'sso'
   | 'users'
   | 'health'

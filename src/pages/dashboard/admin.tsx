@@ -10,11 +10,13 @@ import {
   BillingOverviewPanel,
   AuditLogPanel,
 } from '@/components/admin'
+import { TenantSettingsPage } from '@/components/tenant-settings'
 import type { AdminSection } from '@/types/admin'
 
 const sections: AdminSection[] = [
   'overview',
   'tenants',
+  'preferences',
   'sso',
   'users',
   'health',
@@ -46,6 +48,8 @@ export function AdminPage() {
         return <AdminOverview onSectionChange={setActiveSection} />
       case 'tenants':
         return <TenantSettingsPanel />
+      case 'preferences':
+        return <TenantSettingsPage />
       case 'sso':
         return <SSOConfigurationPanel />
       case 'users':

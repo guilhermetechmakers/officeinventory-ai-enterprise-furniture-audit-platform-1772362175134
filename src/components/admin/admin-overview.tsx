@@ -106,6 +106,12 @@ export function AdminOverview({ onSectionChange }: AdminOverviewProps) {
             >
               Configure SSO
             </Button>
+            <Button
+              variant="outline"
+              onClick={() => onSectionChange?.('preferences')}
+            >
+              Settings & Preferences
+            </Button>
           </div>
         </CardContent>
       </Card>
