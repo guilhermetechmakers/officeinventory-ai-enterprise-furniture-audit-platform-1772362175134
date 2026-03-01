@@ -1,68 +1,148 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
+@layer base {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    /* OfficeInventory AI Design System - UI Guide colors */
+    --background: 245 246 248; /* #F5F6F8 - Soft light gray */
+    --foreground: 35 35 35; /* #232323 - Dark gray text */
+    --card: 232 233 236; /* #E8E9EC - Slightly darker gray */
+    --card-foreground: 35 35 35;
+    --primary: 201 255 82; /* #C9FF52 - Vibrant lime green */
+    --primary-foreground: 24 25 26; /* #18191A - Deep black */
+    --secondary: 255 255 255; /* #FFFFFF */
+    --secondary-foreground: 35 35 35;
+    --accent: 201 255 82;
+    --accent-foreground: 24 25 26;
+    --muted: 182 183 186; /* #B6B7BA - Mid-gray */
+    --muted-foreground: 107 107 107; /* #6B6B6B - Secondary text */
+    --border: 182 183 186;
+    --input: 232 233 236;
+    --ring: 201 255 82;
+    --destructive: 255 94 94; /* #FF5E5E - Red for errors */
+    --warning: 255 200 94; /* #FFC85E - Orange */
+    --info: 110 207 255; /* #6ECFFF - Sky blue */
+    --radius-sm: 0.25rem; /* 4px */
+    --radius-md: 0.5rem; /* 8px */
+    --radius-lg: 0.75rem; /* 12px */
+    --radius-xl: 1rem; /* 16px */
+    --radius-2xl: 1.5rem; /* 24px */
+    --radius-full: 9999px;
+    --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-elevated: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --shadow-overlay: 0 8px 32px rgba(0, 0, 0, 0.16);
   }
-  a:hover {
-    color: #747bff;
+
+  .dark {
+    --background: 24 25 26; /* #18191A */
+    --foreground: 245 246 248;
+    --card: 35 35 35;
+    --card-foreground: 245 246 248;
+    --primary: 201 255 82;
+    --primary-foreground: 24 25 26;
+    --secondary: 35 35 35;
+    --secondary-foreground: 245 246 248;
+    --muted: 107 107 107;
+    --muted-foreground: 182 183 186;
+    --border: 70 70 70;
+    --input: 35 35 35;
+    --ring: 201 255 82;
+    --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-elevated: 0 4px 16px rgba(0, 0, 0, 0.4);
+    --shadow-overlay: 0 8px 32px rgba(0, 0, 0, 0.5);
   }
-  button {
-    background-color: #f9f9f9;
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    @apply antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer utilities {
+  .animate-in {
+    animation: animate-in 0.3s ease-out;
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.3s ease-out;
+  }
+
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      rgb(var(--card)) 0%,
+      rgb(var(--muted) / 0.3) 50%,
+      rgb(var(--card)) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+}
+
+@keyframes animate-in {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
   }
 }
